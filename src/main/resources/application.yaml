@@ -23,4 +23,3 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${SUPABASE_URL}/auth/v1
-          jwk-set-uri: ${SUPABASE_URL}/auth/v1/jwks

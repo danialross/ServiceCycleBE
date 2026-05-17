@@ -1,4 +1,4 @@
-package com.danialross.ServiceCycle.auth;
+package com.danialross.ServiceCycle.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
