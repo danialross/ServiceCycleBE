@@ -2,6 +2,7 @@ package com.danialross.ServiceCycle.vehicles;
 
 import com.danialross.ServiceCycle.vehicles.dto.CreateVehicleDTO;
 import com.danialross.ServiceCycle.vehicles.dto.UpdateVehicleDTO;
+import com.danialross.ServiceCycle.vehicles.dto.VehicleQueryDTO;
 import com.danialross.ServiceCycle.vehicles.dto.VehicleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -57,6 +60,34 @@ public class VehicleController {
     public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
         UUID ownerId = UUID.fromString(payload.getSubject());
         VehicleResponse response = vehicleService.delete(ownerId, id);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "Find all existing vehicles with query parameters")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle retrieved"),
+            @ApiResponse(responseCode = "400", description = "Bad query parameter"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    })
+    @Validated
+    @GetMapping()
+    public ResponseEntity<List<VehicleResponse>> findAll(@AuthenticationPrincipal Jwt payload,@Valid VehicleQueryDTO queries){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+
+        List<VehicleResponse> response = vehicleService.findAll(ownerId, queries);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "Find an existing vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle retrieved"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Vehicle does not exist"),
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+        VehicleResponse response = vehicleService.findByIdAndOwnerId(ownerId,id);
         return ResponseEntity.ok().body(response);
     }
 }

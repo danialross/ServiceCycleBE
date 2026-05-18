@@ -2,13 +2,16 @@ package com.danialross.ServiceCycle.vehicles;
 
 import com.danialross.ServiceCycle.vehicles.dto.CreateVehicleDTO;
 import com.danialross.ServiceCycle.vehicles.dto.UpdateVehicleDTO;
+import com.danialross.ServiceCycle.vehicles.dto.VehicleQueryDTO;
 import com.danialross.ServiceCycle.vehicles.dto.VehicleResponse;
 import com.danialross.ServiceCycle.vehicles.enums.VehicleType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -65,5 +68,35 @@ public class VehicleService {
         Vehicle deletingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " does not have a vehicle with id: " + vehicleId + " to be deleted"));
         vehicleRepository.delete(deletingVehicle);
         return VehicleResponse.fromVehicle(deletingVehicle);
+    }
+
+    public VehicleResponse findByIdAndOwnerId(UUID ownerId, UUID id){
+        Vehicle vehicle = vehicleRepository.findByIdAndOwnerId(ownerId,id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
+        return VehicleResponse.fromVehicle(vehicle);
+    }
+
+    public List<VehicleResponse> findAll(UUID ownerId, VehicleQueryDTO queries){
+
+        Specification<Vehicle> spec = Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ownerId"),ownerId));
+
+        if(queries.getMake() != null){
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(root.get("make")), '%'+queries.getMake().toLowerCase()+'%')));
+        }
+
+        if(queries.getModel() != null){
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(root.get("model")),'%'+queries.getModel().toLowerCase()+'%')));
+        }
+
+        if(queries.getLicensePlate() != null){
+            spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(root.get("licensePlate")),'%'+queries.getLicensePlate().toLowerCase()+'%')));
+        }
+
+        if(queries.getType() != null){
+            spec = spec.and((root,query,criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(root.get("type")),'%'+queries.getType().toLowerCase()+'%'));
+        }
+
+        List<Vehicle> result = vehicleRepository.findAll(spec);
+
+        return result.stream().map(VehicleResponse::fromVehicle).toList();
     }
 }
