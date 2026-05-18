@@ -65,12 +65,13 @@ public class VehicleService {
 
 
     public VehicleResponse delete(UUID ownerId,UUID vehicleId){
-        Vehicle deletingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " does not have a vehicle with id: " + vehicleId + " to be deleted"));
-        vehicleRepository.delete(deletingVehicle);
-        return VehicleResponse.fromVehicle(deletingVehicle);
+        if(!vehicleRepository.existsByIdAndOwnerId(vehicleId,ownerId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " cannot delete vehicle with id: " + vehicleId);
+        vehicleRepository.deleteById(vehicleId);
+        return VehicleResponse.builder().id(vehicleId)
+                .build();
     }
 
-    public VehicleResponse findByIdAndOwnerId(UUID ownerId, UUID id){
+    public VehicleResponse findOne(UUID ownerId, UUID id){
         Vehicle vehicle = vehicleRepository.findByIdAndOwnerId(ownerId,id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
         return VehicleResponse.fromVehicle(vehicle);
     }

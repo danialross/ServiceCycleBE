@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class VehicleResponse {
+    private UUID id;
     private String make;
     private String model;
     private String licensePlate;
@@ -20,6 +21,7 @@ public class VehicleResponse {
 
     public static VehicleResponse fromVehicle(Vehicle vehicle){
             return VehicleResponse.builder()
+                    .id(vehicle.getId())
                     .make(vehicle.getMake())
                     .model(vehicle.getModel())
                     .licensePlate(vehicle.getLicensePlate())

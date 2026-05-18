@@ -87,7 +87,7 @@ public class VehicleController {
     @GetMapping("/{id}")
     public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        VehicleResponse response = vehicleService.findByIdAndOwnerId(ownerId,id);
+        VehicleResponse response = vehicleService.findOne(ownerId,id);
         return ResponseEntity.ok().body(response);
     }
 }
