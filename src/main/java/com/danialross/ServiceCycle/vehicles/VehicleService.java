@@ -1,6 +1,7 @@
 package com.danialross.ServiceCycle.vehicles;
 
 import com.danialross.ServiceCycle.vehicles.dto.CreateVehicleDTO;
+import com.danialross.ServiceCycle.vehicles.dto.UpdateVehicleDTO;
 import com.danialross.ServiceCycle.vehicles.dto.VehicleResponse;
 import com.danialross.ServiceCycle.vehicles.enums.VehicleType;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,32 @@ public class VehicleService {
         newVehicle.setLicensePlate(vehicle.getLicensePlate());
 
         Vehicle savedVehicle = vehicleRepository.save(newVehicle);
+
+        return VehicleResponse.fromVehicle(savedVehicle);
+    }
+
+    public VehicleResponse update(UUID ownerId, UpdateVehicleDTO vehicle){
+        UUID vehicleId = UUID.fromString(vehicle.getId());
+
+        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ownerId + " does not own a vehicle with ID: " + vehicle.getId()));
+
+        if( vehicle.getMake() != null){
+            existingVehicle.setMake(vehicle.getMake());
+        }
+
+        if( vehicle.getModel() != null){
+            existingVehicle.setModel(vehicle.getModel());
+        }
+
+        if( vehicle.getType() != null){
+            existingVehicle.setType(VehicleType.valueOf(vehicle.getType()));
+        }
+
+        if( vehicle.getLicensePlate() != null){
+            existingVehicle.setLicensePlate(vehicle.getLicensePlate());
+        }
+
+        Vehicle savedVehicle = vehicleRepository.save(existingVehicle);
 
         return VehicleResponse.fromVehicle(savedVehicle);
     }

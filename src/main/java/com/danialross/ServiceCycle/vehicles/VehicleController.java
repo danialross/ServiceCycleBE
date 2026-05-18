@@ -1,6 +1,7 @@
 package com.danialross.ServiceCycle.vehicles;
 
 import com.danialross.ServiceCycle.vehicles.dto.CreateVehicleDTO;
+import com.danialross.ServiceCycle.vehicles.dto.UpdateVehicleDTO;
 import com.danialross.ServiceCycle.vehicles.dto.VehicleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +34,19 @@ public class VehicleController {
     public ResponseEntity<VehicleResponse> register(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateVehicleDTO vehicle){
         UUID ownerId = UUID.fromString(payload.getSubject());
         VehicleResponse response = vehicleService.register(ownerId, vehicle);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "Update details for existing vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle created updated"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Vehicle with license plate does not exist")
+    })
+    @PostMapping("/update")
+    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody UpdateVehicleDTO vehicle){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+        VehicleResponse response = vehicleService.update(ownerId, vehicle);
         return ResponseEntity.ok().body(response);
     }
 
