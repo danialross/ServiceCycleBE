@@ -59,4 +59,11 @@ public class VehicleService {
 
         return VehicleResponse.fromVehicle(savedVehicle);
     }
+
+
+    public VehicleResponse delete(UUID ownerId,UUID vehicleId){
+        Vehicle deletingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " does not have a vehicle with id: " + vehicleId + " to be deleted"));
+        vehicleRepository.delete(deletingVehicle);
+        return VehicleResponse.fromVehicle(deletingVehicle);
+    }
 }

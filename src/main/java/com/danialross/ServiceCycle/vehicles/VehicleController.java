@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -24,7 +21,7 @@ import java.util.UUID;
 public class VehicleController {
     private final VehicleService vehicleService;
 
-    @Operation(summary = "Register a vehicle")
+    @Operation(summary = "Register a vehicle to owner")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vehicle created successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
@@ -37,11 +34,11 @@ public class VehicleController {
         return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "Update details for existing vehicle")
+    @Operation(summary = "Update details for owner's existing vehicle")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Vehicle created updated"),
+            @ApiResponse(responseCode = "200", description = "Vehicle updated"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Vehicle with license plate does not exist")
+            @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
     })
     @PostMapping("/update")
     public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody UpdateVehicleDTO vehicle){
@@ -50,4 +47,16 @@ public class VehicleController {
         return ResponseEntity.ok().body(response);
     }
 
+    @Operation(summary = "Delete owner's existing vehicle")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vehicle deleted"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+        VehicleResponse response = vehicleService.delete(ownerId, id);
+        return ResponseEntity.ok().body(response);
+    }
 }
