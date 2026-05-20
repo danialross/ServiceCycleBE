@@ -1,4 +1,4 @@
-package com.danialross.ServiceCycle.vehicles;
+package com.danialross.ServiceCycle.modules.vehicles;
 
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;

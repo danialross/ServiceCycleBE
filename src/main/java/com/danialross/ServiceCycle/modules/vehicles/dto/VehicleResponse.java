@@ -1,7 +1,7 @@
-package com.danialross.ServiceCycle.vehicles.dto;
+package com.danialross.ServiceCycle.modules.vehicles.dto;
 
-import com.danialross.ServiceCycle.vehicles.Vehicle;
-import com.danialross.ServiceCycle.vehicles.enums.VehicleType;
+import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
+import com.danialross.ServiceCycle.modules.vehicles.enums.VehicleType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +17,7 @@ public class VehicleResponse {
     private String model;
     private String licensePlate;
     private VehicleType type;
+    private Integer mileage;
     private UUID ownerId;
 
     public static VehicleResponse fromVehicle(Vehicle vehicle){
@@ -26,6 +27,7 @@ public class VehicleResponse {
                     .model(vehicle.getModel())
                     .licensePlate(vehicle.getLicensePlate())
                     .type(vehicle.getType())
+                    .mileage(vehicle.getMileage())
                     .ownerId(vehicle.getOwnerId())
                     .build();
     }

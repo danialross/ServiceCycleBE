@@ -1,6 +1,7 @@
-package com.danialross.ServiceCycle.vehicles;
+package com.danialross.ServiceCycle.modules.vehicles;
 
-import com.danialross.ServiceCycle.vehicles.enums.VehicleType;
+import com.danialross.ServiceCycle.modules.parts.Part;
+import com.danialross.ServiceCycle.modules.vehicles.enums.VehicleType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 
@@ -40,5 +42,11 @@ public class Vehicle{
 
     @Column(nullable = false,unique = true)
     private String licensePlate;
+
+    @Column(nullable = false)
+    private Integer mileage;
+
+    @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL)
+    private List<Part> parts;
 }
 

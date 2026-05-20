@@ -1,9 +1,9 @@
-package com.danialross.ServiceCycle.vehicles;
+package com.danialross.ServiceCycle.modules.vehicles;
 
-import com.danialross.ServiceCycle.vehicles.dto.CreateVehicleDTO;
-import com.danialross.ServiceCycle.vehicles.dto.UpdateVehicleDTO;
-import com.danialross.ServiceCycle.vehicles.dto.VehicleQueryDTO;
-import com.danialross.ServiceCycle.vehicles.dto.VehicleResponse;
+import com.danialross.ServiceCycle.modules.vehicles.dto.CreateVehicleDTO;
+import com.danialross.ServiceCycle.modules.vehicles.dto.UpdateVehicleDTO;
+import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleQueryDTO;
+import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
