@@ -4,10 +4,7 @@ import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.vehicles.enums.VehicleType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +14,7 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Setter
 @Getter
 @Table(name ="vehicles")

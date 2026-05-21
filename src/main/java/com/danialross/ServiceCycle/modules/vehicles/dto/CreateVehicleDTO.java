@@ -1,24 +1,37 @@
 package com.danialross.ServiceCycle.modules.vehicles.dto;
 
+import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
+import com.danialross.ServiceCycle.modules.vehicles.enums.VehicleType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import java.util.UUID;
 
 @Data
 public class CreateVehicleDTO {
 
     @NotBlank(message = "Make is required")
-    String make;
+    private String make;
 
     @NotBlank(message = "Model is required")
-    String model;
+    private String model;
 
     @NotBlank(message = "License plate is required")
-    String licensePlate;
+    private String licensePlate;
 
     @NotNull(message = "Mileage plate is required")
     @PositiveOrZero(message = "Mileage must be more than 0")
-    Integer mileage;
+    private Integer mileage;
 
     @Pattern(regexp = "CAR|MOTORCYCLE", message = "Invalid vehicle type. Valid options: CAR, MOTORCYCLE")
-    String type;
+    private String type;
+
+    public static Vehicle toEntity(UUID ownerId, CreateVehicleDTO dto){
+        return Vehicle.builder()
+                .ownerId(ownerId)
+                .make(dto.getMake())
+                .model(dto.getModel())
+                .type(VehicleType.valueOf(dto.getType()))
+                .licensePlate(dto.getLicensePlate())
+                .build();
+    }
 }

@@ -23,13 +23,7 @@ public class VehicleService {
         if(vehicleRepository.existsByOwnerIdAndLicensePlate(ownerId,vehicle.getLicensePlate())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,ownerId + " already has a vehicle with license plate: " + vehicle.getLicensePlate());
         }
-
-        Vehicle newVehicle = new Vehicle();
-        newVehicle.setOwnerId(ownerId);
-        newVehicle.setMake(vehicle.getMake());
-        newVehicle.setModel(vehicle.getModel());
-        newVehicle.setType(VehicleType.valueOf(vehicle.getType()));
-        newVehicle.setLicensePlate(vehicle.getLicensePlate());
+        Vehicle newVehicle = CreateVehicleDTO.toEntity(ownerId,vehicle);
 
         return vehicleRepository.save(newVehicle);
     }
