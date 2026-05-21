@@ -32,7 +32,7 @@ public class VehicleController {
             @ApiResponse(responseCode = "409", description = "Vehicle with license plate already exist")
     })
     @PostMapping()
-    public ResponseEntity<VehicleResponse> register(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateVehicleDTO vehicle){
+    public ResponseEntity<VehicleResponse> create(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateVehicleDTO vehicle){
         UUID ownerId = UUID.fromString(payload.getSubject());
         Vehicle newVehicle = vehicleService.register(ownerId, vehicle);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(newVehicle));
@@ -58,7 +58,7 @@ public class VehicleController {
             @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<UUID> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
         UUID ownerId = UUID.fromString(payload.getSubject());
         UUID deletedVehicleId = vehicleService.delete(ownerId, id);
         return ResponseEntity.ok().body(deletedVehicleId);

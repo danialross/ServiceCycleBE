@@ -18,12 +18,12 @@ import java.util.UUID;
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
 
-    public Vehicle register(UUID ownerId, CreateVehicleDTO vehicle){
+    public Vehicle register(UUID ownerId, CreateVehicleDTO vehicleDto){
 
-        if(vehicleRepository.existsByOwnerIdAndLicensePlate(ownerId,vehicle.getLicensePlate())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,ownerId + " already has a vehicle with license plate: " + vehicle.getLicensePlate());
+        if(vehicleRepository.existsByOwnerIdAndLicensePlate(ownerId,vehicleDto.getLicensePlate())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,ownerId + " already has a vehicle with license plate: " + vehicleDto.getLicensePlate());
         }
-        Vehicle newVehicle = CreateVehicleDTO.toEntity(ownerId,vehicle);
+        Vehicle newVehicle = vehicleDto.toEntity(ownerId);
 
         return vehicleRepository.save(newVehicle);
     }

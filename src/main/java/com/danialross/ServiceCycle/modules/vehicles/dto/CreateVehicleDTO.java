@@ -25,13 +25,13 @@ public class CreateVehicleDTO {
     @Pattern(regexp = "CAR|MOTORCYCLE", message = "Invalid vehicle type. Valid options: CAR, MOTORCYCLE")
     private String type;
 
-    public static Vehicle toEntity(UUID ownerId, CreateVehicleDTO dto){
+    public Vehicle toEntity(UUID ownerId){
         return Vehicle.builder()
                 .ownerId(ownerId)
-                .make(dto.getMake())
-                .model(dto.getModel())
-                .type(VehicleType.valueOf(dto.getType()))
-                .licensePlate(dto.getLicensePlate())
+                .make(this.getMake())
+                .model(this.getModel())
+                .type(VehicleType.valueOf(this.getType()))
+                .licensePlate(this.getLicensePlate())
                 .build();
     }
 }
