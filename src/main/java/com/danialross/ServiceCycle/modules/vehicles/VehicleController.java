@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,8 +34,8 @@ public class VehicleController {
     @PostMapping()
     public ResponseEntity<VehicleResponse> register(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateVehicleDTO vehicle){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        VehicleResponse response = vehicleService.register(ownerId, vehicle);
-        return ResponseEntity.ok().body(response);
+        Vehicle newVehicle = vehicleService.register(ownerId, vehicle);
+        return ResponseEntity.ok().body(VehicleResponse.fromVehicle(newVehicle));
     }
 
     @Operation(summary = "Update details for owner's existing vehicle")
@@ -46,8 +47,8 @@ public class VehicleController {
     @PostMapping("/update")
     public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody UpdateVehicleDTO vehicle){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        VehicleResponse response = vehicleService.update(ownerId, vehicle);
-        return ResponseEntity.ok().body(response);
+        Vehicle updatedVehicle = vehicleService.update(ownerId, vehicle);
+        return ResponseEntity.ok().body(VehicleResponse.fromVehicle(updatedVehicle));
     }
 
     @Operation(summary = "Delete owner's existing vehicle")
@@ -57,10 +58,10 @@ public class VehicleController {
             @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+    public ResponseEntity<UUID> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        VehicleResponse response = vehicleService.delete(ownerId, id);
-        return ResponseEntity.ok().body(response);
+        UUID deletedVehicleId = vehicleService.delete(ownerId, id);
+        return ResponseEntity.ok().body(deletedVehicleId);
     }
 
     @Operation(summary = "Find all existing vehicles with query parameters")
@@ -74,7 +75,11 @@ public class VehicleController {
     public ResponseEntity<List<VehicleResponse>> findAll(@AuthenticationPrincipal Jwt payload,@Valid VehicleQueryDTO queries){
         UUID ownerId = UUID.fromString(payload.getSubject());
 
-        List<VehicleResponse> response = vehicleService.findAll(ownerId, queries);
+        List<Vehicle> allVehicles = vehicleService.findAll(ownerId, queries);
+        List<VehicleResponse> response = new ArrayList<>();
+        for(Vehicle vehicle: allVehicles){
+            response.add(VehicleResponse.fromVehicle(vehicle));
+        }
         return ResponseEntity.ok().body(response);
     }
 
@@ -87,7 +92,7 @@ public class VehicleController {
     @GetMapping("/{id}")
     public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        VehicleResponse response = vehicleService.findOne(ownerId,id);
-        return ResponseEntity.ok().body(response);
+        Vehicle response = vehicleService.findOne(ownerId,id);
+        return ResponseEntity.ok().body(VehicleResponse.fromVehicle(response));
     }
 }

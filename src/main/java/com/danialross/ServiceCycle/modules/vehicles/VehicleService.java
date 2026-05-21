@@ -3,7 +3,6 @@ package com.danialross.ServiceCycle.modules.vehicles;
 import com.danialross.ServiceCycle.modules.vehicles.dto.CreateVehicleDTO;
 import com.danialross.ServiceCycle.modules.vehicles.dto.UpdateVehicleDTO;
 import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleQueryDTO;
-import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleResponse;
 import com.danialross.ServiceCycle.modules.vehicles.enums.VehicleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,7 +18,7 @@ import java.util.UUID;
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
 
-    public VehicleResponse register(UUID ownerId, CreateVehicleDTO vehicle){
+    public Vehicle register(UUID ownerId, CreateVehicleDTO vehicle){
 
         if(vehicleRepository.existsByOwnerIdAndLicensePlate(ownerId,vehicle.getLicensePlate())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,ownerId + " already has a vehicle with license plate: " + vehicle.getLicensePlate());
@@ -32,12 +31,10 @@ public class VehicleService {
         newVehicle.setType(VehicleType.valueOf(vehicle.getType()));
         newVehicle.setLicensePlate(vehicle.getLicensePlate());
 
-        Vehicle savedVehicle = vehicleRepository.save(newVehicle);
-
-        return VehicleResponse.fromVehicle(savedVehicle);
+        return vehicleRepository.save(newVehicle);
     }
 
-    public VehicleResponse update(UUID ownerId, UpdateVehicleDTO updateVehicleDTO){
+    public Vehicle update(UUID ownerId, UpdateVehicleDTO updateVehicleDTO){
         UUID vehicleId = UUID.fromString(updateVehicleDTO.getId());
 
         Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ownerId + " does not own a vehicle with ID: " + updateVehicleDTO.getId()));
@@ -63,25 +60,21 @@ public class VehicleService {
             existingVehicle.setMileage(updateVehicleDTO.getMileage());
         }
 
-        Vehicle savedVehicle = vehicleRepository.save(existingVehicle);
-
-        return VehicleResponse.fromVehicle(savedVehicle);
+        return vehicleRepository.save(existingVehicle);
     }
 
 
-    public VehicleResponse delete(UUID ownerId,UUID vehicleId){
+    public UUID delete(UUID ownerId,UUID vehicleId){
         if(!vehicleRepository.existsByIdAndOwnerId(vehicleId,ownerId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " cannot delete vehicle with id: " + vehicleId);
         vehicleRepository.deleteById(vehicleId);
-        return VehicleResponse.builder().id(vehicleId)
-                .build();
+        return vehicleId;
     }
 
-    public VehicleResponse findOne(UUID ownerId, UUID id){
-        Vehicle vehicle = vehicleRepository.findByIdAndOwnerId(ownerId,id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
-        return VehicleResponse.fromVehicle(vehicle);
-    }
+    public Vehicle findOne(UUID ownerId, UUID id){
+        return vehicleRepository.findByIdAndOwnerId(ownerId,id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
+     }
 
-    public List<VehicleResponse> findAll(UUID ownerId, VehicleQueryDTO queries){
+    public List<Vehicle> findAll(UUID ownerId, VehicleQueryDTO queries){
 
         Specification<Vehicle> spec = Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ownerId"),ownerId));
 
@@ -109,8 +102,12 @@ public class VehicleService {
             spec = spec.and((root,query,criteriaBuilder) -> criteriaBuilder.lessThanOrEqualTo(root.get("mileage"),queries.getMaxMileage()));
         }
 
-        List<Vehicle> result = vehicleRepository.findAll(spec);
+        return vehicleRepository.findAll(spec);
+    }
 
-        return result.stream().map(VehicleResponse::fromVehicle).toList();
+    public void checkVehicleWithOwnerExist(UUID vehicleID , UUID ownerId){
+        if(!vehicleRepository.existsByIdAndOwnerId(vehicleID,ownerId)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Owner does not have a vehicel with id: " + vehicleID);
+        }
     }
 }
