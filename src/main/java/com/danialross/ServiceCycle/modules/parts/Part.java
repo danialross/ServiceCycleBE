@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -24,23 +25,21 @@ public class Part {
     @JoinColumn(name = "vehicle_id",nullable = false)
     private Vehicle vehicle;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column()
     private String brand;
 
     @Column()
+    @Enumerated(EnumType.STRING)
     private PartType type;
 
     @Column()
-    private float price;
+    private BigDecimal price;
 
     @Column(nullable = false)
-    private int validityDistance;
+    @Schema(pattern = "numeric value in kilometers")
+    private Integer validityDistance;
 
     @Column(nullable = false)
-    private int validityTime;
-
-
+    @Schema(pattern = "numeric value in months")
+    private Integer validityTime;
 }
