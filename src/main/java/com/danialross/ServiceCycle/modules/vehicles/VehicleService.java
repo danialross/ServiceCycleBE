@@ -65,7 +65,7 @@ public class VehicleService {
     }
 
     public Vehicle findOne(UUID ownerId, UUID id){
-        return vehicleRepository.findByIdAndOwnerId(ownerId,id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
+        return vehicleRepository.findByIdAndOwnerId(id,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
      }
 
     public List<Vehicle> findAll(UUID ownerId, VehicleQueryDTO queries){
@@ -101,7 +101,7 @@ public class VehicleService {
 
     public void checkVehicleWithOwnerExist(UUID vehicleID , UUID ownerId){
         if(!vehicleRepository.existsByIdAndOwnerId(vehicleID,ownerId)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Owner does not have a vehicel with id: " + vehicleID);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Owner does not have a vehicle with id: " + vehicleID);
         }
     }
 }
