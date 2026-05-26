@@ -17,7 +17,6 @@ public class VehicleResponse {
     private String model;
     private String licensePlate;
     private VehicleType type;
-    private Integer mileage;
     private UUID ownerId;
 
     public static VehicleResponse fromVehicle(Vehicle vehicle){
@@ -27,7 +26,6 @@ public class VehicleResponse {
                     .model(vehicle.getModel())
                     .licensePlate(vehicle.getLicensePlate())
                     .type(vehicle.getType())
-                    .mileage(vehicle.getMileage())
                     .ownerId(vehicle.getOwnerId())
                     .build();
     }

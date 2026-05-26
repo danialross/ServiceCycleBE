@@ -8,13 +8,9 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 public class CreatePartDTO {
-
-    @NotNull(message = "Vehicle ID is required")
-    private UUID vehicleId;
 
     @NotNull(message = "Part type is required")
     private PartType type;
