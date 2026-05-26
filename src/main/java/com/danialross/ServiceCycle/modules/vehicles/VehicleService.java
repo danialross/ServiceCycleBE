@@ -96,7 +96,7 @@ public class VehicleService {
 
     public void checkVehicleWithOwnerExist(UUID vehicleID , UUID ownerId){
         if(!vehicleRepository.existsByIdAndOwnerId(vehicleID,ownerId)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Owner does not have a vehicle with id: " + vehicleID);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access Denied");
         }
     }
 }
