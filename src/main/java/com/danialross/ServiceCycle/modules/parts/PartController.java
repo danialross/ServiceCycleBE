@@ -3,6 +3,7 @@ package com.danialross.ServiceCycle.modules.parts;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
 import com.danialross.ServiceCycle.modules.parts.dto.PartResponse;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
+import com.danialross.ServiceCycle.modules.vehicles.dto.UpdateVehicleDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,5 +48,10 @@ public class PartController {
         PartResponse response = PartResponse.fromPart(newPart);
 
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<PartResponse> update(@AuthenticationPrincipal Jwt payload, UpdatePartDTO partDto){
+
     }
 }

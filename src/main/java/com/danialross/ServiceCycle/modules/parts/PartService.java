@@ -20,4 +20,9 @@ public class PartService {
         newPart.setVehicle(vehicle);
         return partRepository.save(newPart);
     }
+
+    public Part update(UUID ownerId, CreatePartDTO partDTO) {
+
+
+    }
 }
