@@ -17,7 +17,7 @@ import java.util.UUID;
         name = "parts",
         check = @CheckConstraint(
                 name = "check_replacement_required",
-                constraint = "lifespan_months IS NOT NULL OR lifespan_km IS NOT NULL"
+                constraint = "lifespan_months IS NOT NULL OR lifespan_kms IS NOT NULL"
         )
 )
 @Schema(description = "Vehicle's Part entity")

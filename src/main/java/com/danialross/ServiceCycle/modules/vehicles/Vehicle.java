@@ -47,7 +47,7 @@ public class Vehicle{
     private List<MaintenanceRecord> maintenanceRecords;
 
     @Column
-    @OneToMany(mappedBy = "mileageRecord",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL)
     private List<MileageRecord> mileageRecord;
 }
 

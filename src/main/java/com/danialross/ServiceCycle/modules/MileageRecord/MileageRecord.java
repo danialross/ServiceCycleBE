@@ -27,7 +27,6 @@ public class MileageRecord {
     private LocalDate date;
 
     @ManyToOne
-    @Column(nullable = false)
     @JoinColumn(name = "vehicle_id",nullable = false)
     private Vehicle vehicle;
 }
