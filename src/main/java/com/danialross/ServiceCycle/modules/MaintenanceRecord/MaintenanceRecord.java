@@ -33,7 +33,7 @@ public class MaintenanceRecord {
     @Schema(description = "mileage at which maintenance was done at")
     private Integer vehicleMileage;
 
-    @Column
+    @Column(nullable = false)
     @Schema(description = "The date the maintenance was done on")
     private LocalDate date;
 
