@@ -5,10 +5,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Data
 public class UpdatePartDTO {
 
     @NotNull(message = "Part Id cannot be null")
@@ -24,11 +26,11 @@ public class UpdatePartDTO {
 
     @PositiveOrZero(message = "Must be more than 0KM")
     @Schema(description = "numeric value in kilometers")
-    private Integer validityDistance;
+    private Integer lifespanKms;
 
     @PositiveOrZero(message = "Must be more than 0 months")
     @Schema(description = "numeric value in months")
-    private Integer validityTime;
+    private Integer lifespanMonths;
 
     @PositiveOrZero(message = "Must be more than $0")
     private BigDecimal price;
@@ -36,5 +38,7 @@ public class UpdatePartDTO {
     @Schema(description = "The brand of the part")
     private String brand;
 
+    @Schema(description = "parts description")
+    private String description;
 
 }

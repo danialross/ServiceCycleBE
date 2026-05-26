@@ -1,5 +1,6 @@
 package com.danialross.ServiceCycle.modules.parts;
 
+import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -26,10 +27,6 @@ public class Part {
     @GeneratedValue()
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id",nullable = false)
-    private Vehicle vehicle;
-
     @Column()
     private String brand;
 
@@ -42,9 +39,13 @@ public class Part {
 
     @Column()
     @Schema(description = "Part's life span in kilometers")
-    private Integer lifespanKm;
+    private Integer lifespanKms;
 
     @Column()
     @Schema(description = "Part's life span in months")
     private Integer lifespanMonths;
+
+    @ManyToOne
+    @JoinColumn(name = "maintenance_record_id",nullable = false)
+    private MaintenanceRecord maintenanceRecord;
 }

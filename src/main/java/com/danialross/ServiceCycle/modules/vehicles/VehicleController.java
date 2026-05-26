@@ -70,7 +70,6 @@ public class VehicleController {
             @ApiResponse(responseCode = "400", description = "Bad query parameter"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
-    @Validated
     @GetMapping()
     public ResponseEntity<List<VehicleResponse>> findAll(@AuthenticationPrincipal Jwt payload,@Valid VehicleQueryDTO queries){
         UUID ownerId = UUID.fromString(payload.getSubject());

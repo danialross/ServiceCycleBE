@@ -9,7 +9,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Data
 @AllArgsConstructor
 @Builder
 public class PartResponse {
@@ -18,18 +17,17 @@ public class PartResponse {
     private String brand;
     private PartType type;
     private BigDecimal price;
-    private Integer validityDistance;
-    private Integer validityTime;
+    private Integer lifespanKms;
+    private Integer lifespanMonths;
 
     public static PartResponse fromPart(Part part){
         return PartResponse.builder()
                 .id(part.getId())
-                .vehicleId(part.getVehicle().getId())
                 .brand(part.getBrand())
                 .type(part.getType())
                 .price(part.getPrice())
-                .validityDistance(part.getValidityDistance())
-                .validityTime(part.getValidityTime())
+                .lifespanKms(part.getLifespanKms())
+                .lifespanMonths(part.getLifespanMonths())
                 .build();
     }
 }

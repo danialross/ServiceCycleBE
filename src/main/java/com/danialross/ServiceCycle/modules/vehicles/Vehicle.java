@@ -1,5 +1,7 @@
 package com.danialross.ServiceCycle.modules.vehicles;
 
+import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
+import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecord;
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.vehicles.enums.VehicleType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,7 +23,7 @@ import java.util.UUID;
 @Schema(description = "Vehicle entity")
 public class Vehicle{
     @Id
-    @GeneratedValue()
+    @GeneratedValue
     @Schema(description = "Vehicle's unique UUID")
     private UUID id;
 
@@ -41,10 +43,12 @@ public class Vehicle{
     @Column(nullable = false,unique = true)
     private String licensePlate;
 
-    @Column(nullable = false)
-    private Integer mileage;
-
+    @Column
     @OneToMany(mappedBy = "vehicle",cascade = CascadeType.ALL)
-    private List<Part> parts;
+    private List<MaintenanceRecord> maintenanceRecords;
+
+    @Column
+    @OneToMany(mappedBy = "mileageRecord",cascade = CascadeType.ALL)
+    private List<MileageRecord> mileageRecord;
 }
 

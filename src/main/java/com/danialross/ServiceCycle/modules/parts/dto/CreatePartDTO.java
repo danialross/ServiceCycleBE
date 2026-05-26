@@ -21,11 +21,11 @@ public class CreatePartDTO {
 
     @PositiveOrZero(message = "Must be more than 0KM")
     @Schema(description = "numeric value in kilometers")
-    private Integer validityDistance;
+    private Integer lifespanKms;
 
     @PositiveOrZero(message = "Must be more than 0 months")
     @Schema(description = "numeric value in months")
-    private Integer validityTime;
+    private Integer lifespanMonths;
 
     @PositiveOrZero(message = "Must be more than $0")
     private BigDecimal price;
@@ -37,8 +37,8 @@ public class CreatePartDTO {
         return Part.builder()
                 .type(this.getType())
                 .price(this.getPrice())
-                .validityTime(this.getValidityTime())
-                .validityDistance(this.getValidityDistance())
+                .lifespanKms(this.getLifespanKms())
+                .lifespanMonths(this.getLifespanMonths())
                 .brand(this.getBrand())
                 .build();
 
