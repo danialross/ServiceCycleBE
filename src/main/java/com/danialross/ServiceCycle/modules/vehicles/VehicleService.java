@@ -49,11 +49,6 @@ public class VehicleService {
             existingVehicle.setLicensePlate(updateVehicleDTO.getLicensePlate());
         }
 
-        if( updateVehicleDTO.getMileage() != null){
-            if(updateVehicleDTO.getMileage() < existingVehicle.getMileage()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Mileage cannot be lower than before");
-            existingVehicle.setMileage(updateVehicleDTO.getMileage());
-        }
-
         return vehicleRepository.save(existingVehicle);
     }
 
@@ -64,8 +59,8 @@ public class VehicleService {
         return vehicleId;
     }
 
-    public Vehicle findOne(UUID ownerId, UUID id){
-        return vehicleRepository.findByIdAndOwnerId(id,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
+    public Vehicle findOne(UUID id){
+        return vehicleRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
      }
 
     public List<Vehicle> findAll(UUID ownerId, VehicleQueryDTO queries){
