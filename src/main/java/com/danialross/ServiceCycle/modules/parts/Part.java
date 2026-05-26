@@ -1,7 +1,6 @@
 package com.danialross.ServiceCycle.modules.parts;
 
 import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
-import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;

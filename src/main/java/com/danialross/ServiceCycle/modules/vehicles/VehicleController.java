@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -91,7 +90,8 @@ public class VehicleController {
     @GetMapping("/{id}")
     public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        Vehicle response = vehicleService.findOne(ownerId,id);
+        vehicleService.checkVehicleWithOwnerExist(id,ownerId);
+        Vehicle response = vehicleService.findOne(id);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(response));
     }
 }

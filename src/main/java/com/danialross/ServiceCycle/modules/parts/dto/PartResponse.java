@@ -4,8 +4,6 @@ import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.PartType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
