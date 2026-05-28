@@ -1,6 +1,8 @@
 package com.danialross.ServiceCycle.modules.parts;
 
 import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
+import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
+import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,22 +31,30 @@ public class Part {
     @Column()
     private String brand;
 
-    @Column()
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PartType type;
 
     @Column()
-    private BigDecimal price;
+    @Enumerated(EnumType.STRING)
+    private PartPosition position;
 
     @Column()
+    private BigDecimal price;
+
+    @Column(nullable = false)
     @Schema(description = "Part's life span in kilometers")
     private Integer lifespanKms;
 
-    @Column()
+    @Column(nullable = false)
     @Schema(description = "Part's life span in months")
     private Integer lifespanMonths;
 
     @ManyToOne
     @JoinColumn(name = "maintenance_record_id",nullable = false)
     private MaintenanceRecord maintenanceRecord;
+
+    @Column()
+    @Schema(description = "Part's index")
+    private Integer index;
 }

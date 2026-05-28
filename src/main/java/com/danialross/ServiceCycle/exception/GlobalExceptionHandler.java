@@ -49,18 +49,11 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-
-    //for when enum is invalid
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-        Map<String, String> errors = new HashMap<>();
-
-        int messageStartingIndex = ex.getMessage().indexOf("from");
-        String errorMessage = ex.getMessage().substring(messageStartingIndex);
-
         ApiError response = ApiError.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .messages(errorMessage)
+                .messages(ex.getMessage())
                 .timeStamp(LocalDateTime.now())
                 .build();
 

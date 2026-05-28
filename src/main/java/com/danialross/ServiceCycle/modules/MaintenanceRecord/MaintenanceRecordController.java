@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -32,6 +29,19 @@ public class MaintenanceRecordController {
     private ResponseEntity<MaintenanceResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMaintenanceDTO dto){
         UUID ownerId = UUID.fromString(payload.getSubject());
         MaintenanceRecord maintenance = maintenanceRecordService.add(ownerId,dto);
+        MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "Retrieve a maintenance record")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+    })
+    @GetMapping("/{maintenanceId}")
+    private ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceId){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+        MaintenanceRecord maintenance = maintenanceRecordService.getByOwner(ownerId,maintenanceId);
         MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
         return ResponseEntity.ok().body(response);
     }

@@ -1,23 +1,23 @@
 package com.danialross.ServiceCycle.modules.MaintenanceRecord.dto;
 
-import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
-import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
-import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
+import com.danialross.ServiceCycle.modules.parts.dto.UpdatePartDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Data;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-@Data
-public class CreateMaintenanceDTO {
+public class UpdateMaintenanceDTO {
+
+    @Schema(description = "Maintenance ID")
+    @NotNull(message = "Maintenance id is required")
+    private UUID maintenanceId;
 
     @Schema(description = "Vehicle ID")
     @NotNull(message = "Vehicle id is required")
@@ -33,19 +33,10 @@ public class CreateMaintenanceDTO {
     @PastOrPresent(message = "Maintenance must be now or previously")
     private LocalDate date;
 
-    @Schema(description = "Parts that was added for the maintenance")
+    @Schema(description = "Parts that was updated for the maintenance")
     @Valid
     @NotEmpty(message = "Maintenance must contain parts")
-    private List<CreatePartDTO> parts;
+    private List<UpdatePartDTO> parts;
 
     private String description;
-
-    public MaintenanceRecord toRecord(Vehicle vehicle){
-        return MaintenanceRecord.builder()
-                .date(date)
-                .description(description)
-                .vehicle(vehicle)
-                .vehicleMileage(vehicleMileage)
-                .build();
-    }
 }
