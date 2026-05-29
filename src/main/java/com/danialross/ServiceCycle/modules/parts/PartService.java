@@ -37,19 +37,23 @@ public class PartService {
 
         boolean hasPosition = dto.getPosition() != null;
         boolean hasIndexes = dto.getIndex() != null;
-        boolean hasPositionOrIndex = dto.getIndex() != null || dto.getPosition() != null;
+        StringBuilder error = new StringBuilder();
 
+        if (hasPositionedParts) {
+            if (!hasPosition) error.append(PartType.positionedParts + " must have positions\n");
+            if (hasIndexes) error.append(PartType.positionedParts + " cant have index\n");
+        }
 
-        if (hasPositionedParts && !hasPosition)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    PartType.positionedParts + " must have positions");
+        if (hasIndexedParts) {
+            if (!hasIndexes) error.append(PartType.indexedParts + " must have indexes\n");
+            if (hasPosition) error.append(PartType.indexedParts + " cant have positions\n");
+        }
 
-        if (hasIndexedParts && !hasIndexes)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    PartType.indexedParts + " must have indexes");
+        if(!(hasIndexedParts || hasPositionedParts) && (hasIndexes || hasPosition))
+            error.append("Parts cannot have index or postions\n");
 
-        if((!hasPositionedParts || !hasIndexedParts) && hasPositionOrIndex)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    dto.getType() + " cannot have position or indexes");
+        if(!error.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, error.toString());
+        }
     }
 }

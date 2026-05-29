@@ -32,7 +32,7 @@ public class VehicleService {
     public Vehicle update(UUID userId, UpdateVehicleDTO updateVehicleDTO){
         UUID vehicleId = UUID.fromString(updateVehicleDTO.getId());
 
-        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ownerId + " does not own a vehicle with ID: " + updateVehicleDTO.getId()));
+        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, userId + " does not own a vehicle with ID: " + updateVehicleDTO.getId()));
 
         if( updateVehicleDTO.getMake() != null){
             existingVehicle.setMake(updateVehicleDTO.getMake());
@@ -55,7 +55,7 @@ public class VehicleService {
 
 
     public UUID delete(UUID userId,UUID vehicleId){
-        if(!vehicleRepository.existsByIdAndOwnerId(vehicleId,userId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " cannot delete vehicle with id: " + vehicleId);
+        if(!vehicleRepository.existsByIdAndOwnerId(vehicleId,userId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,userId + " cannot delete vehicle with id: " + vehicleId);
         vehicleRepository.deleteById(vehicleId);
         return vehicleId;
     }
