@@ -1,11 +1,15 @@
 package com.danialross.ServiceCycle.modules.MaintenanceRecord;
 
 import com.danialross.ServiceCycle.modules.MaintenanceRecord.dto.CreateMaintenanceDTO;
+import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecord;
+import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecordService;
+import com.danialross.ServiceCycle.modules.MileageRecord.dto.CreateMileageRecordDTO;
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.PartService;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,9 +25,11 @@ public class MaintenanceRecordService {
     private final MaintenanceRecordRepository maintenanceRecordRepository;
     private final VehicleService vehicleService;
     private final PartService partService;
+    private final MileageRecordService mileageRecordService;
 
-    public MaintenanceRecord add(UUID ownerId, CreateMaintenanceDTO createMaintenanceDTO){
-        vehicleService.checkVehicleWithOwnerExist(createMaintenanceDTO.getVehicleId(),ownerId);
+    @Transactional
+    public MaintenanceRecord add(UUID userId, CreateMaintenanceDTO createMaintenanceDTO){
+        vehicleService.checkVehicleWithOwnerExist(createMaintenanceDTO.getVehicleId(),userId);
         Vehicle vehicle = vehicleService.findOne(createMaintenanceDTO.getVehicleId());
 
         for(CreatePartDTO part : createMaintenanceDTO.getParts()){
@@ -38,8 +44,8 @@ public class MaintenanceRecordService {
             part.setMaintenanceRecord(newRecord);
             parts.add(part);
         }
-
         newRecord.setParts(parts);
+        mileageRecordService.add(userId,createMaintenanceDTO.toMileageRecordDTO(vehicle));
 
         return maintenanceRecordRepository.save(newRecord);
     }

@@ -1,6 +1,7 @@
 package com.danialross.ServiceCycle.modules.MaintenanceRecord.dto;
 
 import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
+import com.danialross.ServiceCycle.modules.MileageRecord.dto.MileageResponse;
 import com.danialross.ServiceCycle.modules.parts.dto.PartResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package com.danialross.ServiceCycle.modules.MaintenanceRecord.dto;
 
 import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
-import com.danialross.ServiceCycle.modules.parts.Part;
+import com.danialross.ServiceCycle.modules.MileageRecord.dto.CreateMileageRecordDTO;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,6 +46,14 @@ public class CreateMaintenanceDTO {
                 .description(description)
                 .vehicle(vehicle)
                 .vehicleMileage(vehicleMileage)
+                .build();
+    }
+
+    public CreateMileageRecordDTO toMileageRecordDTO(Vehicle vehicle){
+        return CreateMileageRecordDTO.builder()
+                .mileage(vehicleMileage)
+                .date(date)
+                .vehicleId(vehicleId)
                 .build();
     }
 }
