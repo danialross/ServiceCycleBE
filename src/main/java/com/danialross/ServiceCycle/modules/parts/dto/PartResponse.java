@@ -17,8 +17,6 @@ import java.util.UUID;
 public class PartResponse {
     @Schema(description = "Vehicle part ID")
     private UUID id;
-    @Schema(description = "Vehicle ID")
-    private UUID vehicleId;
     @Schema(description = "Brand of the vehicle part")
     private String brand;
     @Schema(description = "Type of vehicle part")
