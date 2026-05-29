@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -26,8 +25,6 @@ public class MaintenanceRecordService {
     public MaintenanceRecord add(UUID ownerId, CreateMaintenanceDTO createMaintenanceDTO){
         vehicleService.checkVehicleWithOwnerExist(createMaintenanceDTO.getVehicleId(),ownerId);
         Vehicle vehicle = vehicleService.findOne(createMaintenanceDTO.getVehicleId());
-
-
 
         for(CreatePartDTO part : createMaintenanceDTO.getParts()){
             partService.validatePart(part);

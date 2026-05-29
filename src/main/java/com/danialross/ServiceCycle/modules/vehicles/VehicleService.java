@@ -19,20 +19,20 @@ import java.util.UUID;
 public class VehicleService {
     private final VehicleRepository vehicleRepository;
 
-    public Vehicle register(UUID ownerId, CreateVehicleDTO vehicleDto){
+    public Vehicle register(UUID userId, CreateVehicleDTO vehicleDto){
 
-        if(vehicleRepository.existsByOwnerIdAndLicensePlate(ownerId,vehicleDto.getLicensePlate())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,ownerId + " already has a vehicle with license plate: " + vehicleDto.getLicensePlate());
+        if(vehicleRepository.existsByOwnerIdAndLicensePlate(userId,vehicleDto.getLicensePlate())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,userId + " already has a vehicle with license plate: " + vehicleDto.getLicensePlate());
         }
-        Vehicle newVehicle = vehicleDto.toEntity(ownerId);
+        Vehicle newVehicle = vehicleDto.toEntity(userId);
 
         return vehicleRepository.save(newVehicle);
     }
 
-    public Vehicle update(UUID ownerId, UpdateVehicleDTO updateVehicleDTO){
+    public Vehicle update(UUID userId, UpdateVehicleDTO updateVehicleDTO){
         UUID vehicleId = UUID.fromString(updateVehicleDTO.getId());
 
-        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,ownerId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ownerId + " does not own a vehicle with ID: " + updateVehicleDTO.getId()));
+        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, ownerId + " does not own a vehicle with ID: " + updateVehicleDTO.getId()));
 
         if( updateVehicleDTO.getMake() != null){
             existingVehicle.setMake(updateVehicleDTO.getMake());
@@ -54,8 +54,8 @@ public class VehicleService {
     }
 
 
-    public UUID delete(UUID ownerId,UUID vehicleId){
-        if(!vehicleRepository.existsByIdAndOwnerId(vehicleId,ownerId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " cannot delete vehicle with id: " + vehicleId);
+    public UUID delete(UUID userId,UUID vehicleId){
+        if(!vehicleRepository.existsByIdAndOwnerId(vehicleId,userId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,ownerId + " cannot delete vehicle with id: " + vehicleId);
         vehicleRepository.deleteById(vehicleId);
         return vehicleId;
     }
@@ -64,9 +64,9 @@ public class VehicleService {
         return vehicleRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle with id: " + id + " not found"));
      }
 
-    public List<Vehicle> findAll(UUID ownerId, VehicleQueryDTO queries){
+    public List<Vehicle> findAll(UUID userId, VehicleQueryDTO queries){
 
-        Specification<Vehicle> spec = Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ownerId"),ownerId));
+        Specification<Vehicle> spec = Specification.where((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ownerId"),userId));
 
         if(queries.getMake() != null){
             spec = spec.and(((root, query, criteriaBuilder) -> criteriaBuilder.like(criteriaBuilder.lower(root.get("make")), '%'+queries.getMake().toLowerCase()+'%')));

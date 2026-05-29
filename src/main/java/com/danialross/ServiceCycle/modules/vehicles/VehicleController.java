@@ -32,8 +32,8 @@ public class VehicleController {
     })
     @PostMapping()
     public ResponseEntity<VehicleResponse> create(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateVehicleDTO vehicle){
-        UUID ownerId = UUID.fromString(payload.getSubject());
-        Vehicle newVehicle = vehicleService.register(ownerId, vehicle);
+        UUID userId = UUID.fromString(payload.getSubject());
+        Vehicle newVehicle = vehicleService.register(userId, vehicle);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(newVehicle));
     }
 
@@ -45,8 +45,8 @@ public class VehicleController {
     })
     @PostMapping("/update")
     public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody UpdateVehicleDTO vehicle){
-        UUID ownerId = UUID.fromString(payload.getSubject());
-        Vehicle updatedVehicle = vehicleService.update(ownerId, vehicle);
+        UUID userId = UUID.fromString(payload.getSubject());
+        Vehicle updatedVehicle = vehicleService.update(userId, vehicle);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(updatedVehicle));
     }
 
@@ -58,8 +58,8 @@ public class VehicleController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
-        UUID ownerId = UUID.fromString(payload.getSubject());
-        UUID deletedVehicleId = vehicleService.delete(ownerId, id);
+        UUID userId = UUID.fromString(payload.getSubject());
+        UUID deletedVehicleId = vehicleService.delete(userId, id);
         return ResponseEntity.ok().body(deletedVehicleId);
     }
 
@@ -71,9 +71,9 @@ public class VehicleController {
     })
     @GetMapping()
     public ResponseEntity<List<VehicleResponse>> findAll(@AuthenticationPrincipal Jwt payload,@Valid VehicleQueryDTO queries){
-        UUID ownerId = UUID.fromString(payload.getSubject());
+        UUID userId = UUID.fromString(payload.getSubject());
 
-        List<Vehicle> allVehicles = vehicleService.findAll(ownerId, queries);
+        List<Vehicle> allVehicles = vehicleService.findAll(userId, queries);
         List<VehicleResponse> response = new ArrayList<>();
         for(Vehicle vehicle: allVehicles){
             response.add(VehicleResponse.fromVehicle(vehicle));
@@ -89,8 +89,8 @@ public class VehicleController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
-        UUID ownerId = UUID.fromString(payload.getSubject());
-        vehicleService.checkVehicleWithOwnerExist(id,ownerId);
+        UUID userId = UUID.fromString(payload.getSubject());
+        vehicleService.checkVehicleWithOwnerExist(id,userId);
         Vehicle response = vehicleService.findOne(id);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(response));
     }
