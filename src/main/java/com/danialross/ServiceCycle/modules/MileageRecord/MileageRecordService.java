@@ -37,7 +37,7 @@ public class MileageRecordService {
         vehicleService.checkVehicleWithOwnerExist(mileageDto.getVehicleId(),userId);
 
         MileageRecord entryBeforeDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateBeforeOrderByDateDesc(mileageDto.getVehicleId(), mileageDto.getDate()).orElse(null);
-        MileageRecord entryAfterDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateAfterOrderByDateDesc(mileageDto.getVehicleId(),mileageDto.getDate()).orElse(null);
+        MileageRecord entryAfterDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateAfterOrderByDateAsc(mileageDto.getVehicleId(),mileageDto.getDate()).orElse(null);
 
         StringBuilder error = new StringBuilder();
 
