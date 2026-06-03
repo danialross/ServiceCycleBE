@@ -17,13 +17,10 @@ public class CreateMileageRecordDTO {
     private Integer mileage;
     @Schema(description = "Vehicle ID of the new mileage record")
     private UUID vehicleId;
-    @Schema(description = "Date of the mileage record")
-    private LocalDate date;
 
     public MileageRecord toRecord(Vehicle vehicle){
         return MileageRecord.builder()
                 .mileage(mileage)
-                .date(date)
                 .vehicle(vehicle)
                 .build();
     }

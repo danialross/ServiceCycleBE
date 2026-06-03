@@ -52,7 +52,6 @@ public class CreateMaintenanceDTO {
     public CreateMileageRecordDTO toMileageRecordDTO(Vehicle vehicle){
         return CreateMileageRecordDTO.builder()
                 .mileage(vehicleMileage)
-                .date(date)
                 .vehicleId(vehicleId)
                 .build();
     }

@@ -1,5 +1,6 @@
 package com.danialross.ServiceCycle.modules.MileageRecord;
 
+import com.danialross.ServiceCycle.modules.MileageRecord.dto.MileageResponse;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
