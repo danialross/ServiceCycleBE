@@ -1,6 +1,7 @@
 package com.danialross.ServiceCycle.modules.MileageRecord;
 
 import com.danialross.ServiceCycle.modules.MileageRecord.dto.CreateMileageRecordDTO;
+import com.danialross.ServiceCycle.modules.MileageRecord.dto.UpdateMileageRecordDTO;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,32 @@ public class MileageRecordService {
         Vehicle vehicle = vehicleService.findOne(mileageDto.getVehicleId());
         MileageRecord newRecord = mileageDto.toRecord(vehicle);
         newRecord.setDate(LocalDate.now());
+        return mileageRecordRepository.save(newRecord);
+    }
+
+    public MileageRecord update(UUID userId,UUID mileageRecordId, UpdateMileageRecordDTO mileageDto){
+        vehicleService.checkVehicleWithOwnerExist(mileageDto.getVehicleId(),userId);
+
+        MileageRecord entryBeforeDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateBeforeOrderByDateDesc(mileageDto.getVehicleId(), mileageDto.getDate()).orElse(null);
+        MileageRecord entryAfterDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateAfterOrderByDateDesc(mileageDto.getVehicleId(),mileageDto.getDate()).orElse(null);
+
+        StringBuilder error = new StringBuilder();
+
+        if(entryBeforeDtoDate != null && mileageDto.getMileage() < entryBeforeDtoDate.getMileage() ) {
+            error.append("Mileage cannot be less than entry before it of " + entryBeforeDtoDate.getMileage() + "km\n");
+        }
+
+        if(entryAfterDtoDate != null && mileageDto.getMileage() > entryAfterDtoDate.getMileage() ) {
+            error.append("Mileage cannot be more than entry after it of " + entryAfterDtoDate.getMileage() + "km\n");
+        }
+
+        if(!error.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, error.toString());
+        }
+
+        Vehicle vehicle = vehicleService.findOne(mileageDto.getVehicleId());
+        MileageRecord newRecord = mileageDto.toRecord(vehicle);
+        newRecord.setId(mileageRecordId);
         return mileageRecordRepository.save(newRecord);
     }
 
