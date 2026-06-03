@@ -41,11 +41,23 @@ public class MileageRecordController {
             @ApiResponse(responseCode = "404", description = "Record Not Found"),
 
     })
-    @PostMapping("/mileage/{id}")
-    public ResponseEntity<MileageResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable String id,@Valid @RequestBody UpdateMileageRecordDTO mileageRecordDTO){
-        UUID userId = UUID.fromString(payload.getSubject());
-        UUID mileageRecordId = UUID.fromString(id);
-        MileageRecord response = mileageRecordService.update(userId,mileageRecordId,mileageRecordDTO);
+    @PostMapping("/mileage/{mileageRecordId}")
+    public ResponseEntity<MileageResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID mileageRecordId,@Valid @RequestBody UpdateMileageRecordDTO mileageRecordDTO){
+        UUID userId = UUID.fromString(payload.getSubject());MileageRecord response = mileageRecordService.update(userId,mileageRecordId,mileageRecordDTO);
         return ResponseEntity.ok(MileageResponse.fromRecord(response));
+    }
+
+    @Operation(summary = "Delete a mileage record")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Record deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
+
+    })
+    @DeleteMapping("/mileage/{mileageRecordId}")
+    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID mileageRecordId){
+        UUID userId = UUID.fromString(payload.getSubject());
+        UUID deletedRecord = mileageRecordService.delete(userId,mileageRecordId);
+        return ResponseEntity.ok(deletedRecord);
     }
 }

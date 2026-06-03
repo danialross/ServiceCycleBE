@@ -59,4 +59,14 @@ public class MileageRecordService {
         return mileageRecordRepository.save(newRecord);
     }
 
+    public UUID delete(UUID userId, UUID mileageRecordId){
+        MileageRecord record = mileageRecordRepository.findById(mileageRecordId).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Record does not exists"));
+
+        if(!record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"User cannot delete record");
+
+        mileageRecordRepository.delete(record);
+
+        return mileageRecordId;
+    }
+
 }
