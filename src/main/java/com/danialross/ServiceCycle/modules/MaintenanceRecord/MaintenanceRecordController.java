@@ -38,10 +38,10 @@ public class MaintenanceRecordController {
             @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
-    @GetMapping("/{id}")
-    private ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+    @GetMapping("/{maintenanceRecordId}")
+    private ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        MaintenanceRecord maintenance = maintenanceRecordService.getByOwner(ownerId,id);
+        MaintenanceRecord maintenance = maintenanceRecordService.getByOwner(ownerId,maintenanceRecordId);
         MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
         return ResponseEntity.ok().body(response);
     }

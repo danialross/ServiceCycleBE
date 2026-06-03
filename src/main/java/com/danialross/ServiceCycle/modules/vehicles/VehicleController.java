@@ -43,10 +43,9 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
     })
-    @PostMapping("/{id}")
-    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable String id,@Valid @RequestBody UpdateVehicleDTO vehicle){
+    @PostMapping("/{vehicleId}")
+    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID vehicleId,@Valid @RequestBody UpdateVehicleDTO vehicle){
         UUID userId = UUID.fromString(payload.getSubject());
-        UUID vehicleId = UUID.fromString(id);
         Vehicle updatedVehicle = vehicleService.update(userId,vehicleId, vehicle);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(updatedVehicle));
     }
@@ -57,10 +56,10 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
     })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+    @DeleteMapping("/{vehicleId}")
+    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID vehicleId){
         UUID userId = UUID.fromString(payload.getSubject());
-        UUID deletedVehicleId = vehicleService.delete(userId, id);
+        UUID deletedVehicleId = vehicleService.delete(userId, vehicleId);
         return ResponseEntity.ok().body(deletedVehicleId);
     }
 
@@ -88,11 +87,11 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "Vehicle does not exist"),
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID id){
+    @GetMapping("/{vehicleId}")
+    public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID vehicleId){
         UUID userId = UUID.fromString(payload.getSubject());
-        vehicleService.checkVehicleWithOwnerExist(id,userId);
-        Vehicle response = vehicleService.findOne(id);
+        vehicleService.checkVehicleWithOwnerExist(vehicleId,userId);
+        Vehicle response = vehicleService.findOne(vehicleId);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(response));
     }
 }
