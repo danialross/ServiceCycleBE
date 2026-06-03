@@ -29,10 +29,9 @@ public class VehicleService {
         return vehicleRepository.save(newVehicle);
     }
 
-    public Vehicle update(UUID userId, UpdateVehicleDTO updateVehicleDTO){
-        UUID vehicleId = UUID.fromString(updateVehicleDTO.getId());
+    public Vehicle update(UUID userId,UUID vehicleId, UpdateVehicleDTO updateVehicleDTO){
 
-        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, userId + " does not own a vehicle with ID: " + updateVehicleDTO.getId()));
+        Vehicle existingVehicle = vehicleRepository.findByIdAndOwnerId(vehicleId,userId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, userId + " does not own a vehicle with ID: " + vehicleId));
 
         if( updateVehicleDTO.getMake() != null){
             existingVehicle.setMake(updateVehicleDTO.getMake());

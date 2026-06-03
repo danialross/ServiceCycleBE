@@ -25,7 +25,7 @@ public class MaintenanceRecordController {
             @ApiResponse(responseCode = "200", description = "Record created successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
      })
-    @PostMapping("/add")
+    @PostMapping("/")
     private ResponseEntity<MaintenanceResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMaintenanceDTO dto){
         UUID ownerId = UUID.fromString(payload.getSubject());
         MaintenanceRecord maintenance = maintenanceRecordService.add(ownerId,dto);

@@ -43,10 +43,11 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "404", description = "Vehicle with id does not exist")
     })
-    @PostMapping("/update")
-    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody UpdateVehicleDTO vehicle){
+    @PostMapping("/{id}")
+    public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable String id,@Valid @RequestBody UpdateVehicleDTO vehicle){
         UUID userId = UUID.fromString(payload.getSubject());
-        Vehicle updatedVehicle = vehicleService.update(userId, vehicle);
+        UUID vehicleId = UUID.fromString(id);
+        Vehicle updatedVehicle = vehicleService.update(userId,vehicleId, vehicle);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(updatedVehicle));
     }
 
