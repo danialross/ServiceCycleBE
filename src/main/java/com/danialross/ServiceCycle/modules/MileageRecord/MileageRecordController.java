@@ -60,4 +60,17 @@ public class MileageRecordController {
         UUID deletedRecord = mileageRecordService.delete(userId,mileageRecordId);
         return ResponseEntity.ok(deletedRecord);
     }
+
+    @Operation(summary = "Get current vehicle mileage record")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get mileage record successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
+
+    })
+    @GetMapping("/mileage/vehicle/{vehicleId}")
+    public ResponseEntity<MileageResponse> get(UUID vehicleId){
+        MileageRecord record = mileageRecordService.get(vehicleId);
+        return ResponseEntity.ok(MileageResponse.fromRecord(record));
+    }
 }

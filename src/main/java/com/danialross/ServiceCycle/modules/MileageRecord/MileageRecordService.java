@@ -20,7 +20,7 @@ public class MileageRecordService {
     public MileageRecord add(UUID userId, CreateMileageRecordDTO mileageDto){
         vehicleService.checkVehicleWithOwnerExist(mileageDto.getVehicleId(),userId);
 
-        MileageRecord entryBeforeDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateBeforeOrderByDateDesc(mileageDto.getVehicleId(), LocalDate.now()).orElse(null);
+        MileageRecord entryBeforeDtoDate = mileageRecordRepository.findEntryBefore(mileageDto.getVehicleId(), LocalDate.now(),mileageDto.getMileage(),null).orElse(null);
 
         if(entryBeforeDtoDate != null && mileageDto.getMileage() < entryBeforeDtoDate.getMileage() ) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -36,8 +36,8 @@ public class MileageRecordService {
     public MileageRecord update(UUID userId,UUID mileageRecordId, UpdateMileageRecordDTO mileageDto){
         vehicleService.checkVehicleWithOwnerExist(mileageDto.getVehicleId(),userId);
 
-        MileageRecord entryBeforeDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateBeforeOrderByDateDesc(mileageDto.getVehicleId(), mileageDto.getDate()).orElse(null);
-        MileageRecord entryAfterDtoDate = mileageRecordRepository.findTopByVehicleIdAndDateAfterOrderByDateAsc(mileageDto.getVehicleId(),mileageDto.getDate()).orElse(null);
+        MileageRecord entryBeforeDtoDate = mileageRecordRepository.findEntryBefore(mileageDto.getVehicleId(), mileageDto.getDate(),mileageDto.getMileage(),mileageRecordId).orElse(null);
+        MileageRecord entryAfterDtoDate = mileageRecordRepository.findEntryAfter(mileageDto.getVehicleId(), mileageDto.getDate(),mileageDto.getMileage(),mileageRecordId).orElse(null);
 
         StringBuilder error = new StringBuilder();
 
@@ -67,6 +67,10 @@ public class MileageRecordService {
         mileageRecordRepository.delete(record);
 
         return mileageRecordId;
+    }
+
+    public MileageRecord get(UUID vehicleId){
+        return mileageRecordRepository.findTopByVehicleIdOrderByDateDescMileageDesc(vehicleId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle: " + vehicleId + " not found"));
     }
 
 }
