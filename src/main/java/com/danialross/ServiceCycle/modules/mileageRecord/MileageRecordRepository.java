@@ -4,12 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface MileageRecordRepository extends JpaRepository<MileageRecord, UUID> {
-    Optional<MileageRecord> findByVehicleId(UUID vehicleId);
-
     // entry just before in (date, mileage) order — excluding itself
     @Query("""
     SELECT m FROM MileageRecord m
@@ -33,5 +32,6 @@ public interface MileageRecordRepository extends JpaRepository<MileageRecord, UU
     Optional<MileageRecord> findEntryAfter(UUID vehicleId, LocalDate date, int mileage, UUID excludeId);
 
     Optional<MileageRecord> findTopByVehicleIdOrderByDateDescMileageDesc(UUID vehicleId);
+    List<MileageRecord> findByVehicleIdOrderByDateDesc(UUID vehicleId);
 }
 

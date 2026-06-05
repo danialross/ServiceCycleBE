@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -69,8 +70,26 @@ public class MileageRecordService {
         return mileageRecordId;
     }
 
-    public MileageRecord get(UUID vehicleId){
-        return mileageRecordRepository.findTopByVehicleIdOrderByDateDescMileageDesc(vehicleId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle: " + vehicleId + " not found"));
+    public MileageRecord getLatestMileageRecord(UUID userId,UUID vehicleId){
+        MileageRecord record = mileageRecordRepository.findTopByVehicleIdOrderByDateDescMileageDesc(vehicleId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Vehicle: " + vehicleId + " not found"));
+        checkAccess(userId,record);
+        return record;
     }
 
+    public List<MileageRecord> findAllWithAuthCheck(UUID userId, UUID vehicleId){
+        List<MileageRecord> records =  mileageRecordRepository.findByVehicleIdOrderByDateDesc(vehicleId);
+        checkAccess(userId,records.getFirst());
+        return records;
+
+    }
+
+    public MileageRecord findOneWithAuthCheck(UUID userId, UUID mileageRecordId){
+        MileageRecord record = mileageRecordRepository.findById(mileageRecordId).orElseThrow( ()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Mileage Record with ID: " + mileageRecordId + " not found"));
+        checkAccess(userId,record);
+        return record;
+    }
+
+    public void checkAccess(UUID userId,MileageRecord record){
+        if(record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
 }
