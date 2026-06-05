@@ -1,8 +1,8 @@
-package com.danialross.ServiceCycle.modules.MileageRecord;
+package com.danialross.ServiceCycle.modules.mileageRecord;
 
-import com.danialross.ServiceCycle.modules.MileageRecord.dto.CreateMileageRecordDTO;
-import com.danialross.ServiceCycle.modules.MileageRecord.dto.MileageResponse;
-import com.danialross.ServiceCycle.modules.MileageRecord.dto.UpdateMileageRecordDTO;
+import com.danialross.ServiceCycle.modules.mileageRecord.dto.CreateMileageRecordDTO;
+import com.danialross.ServiceCycle.modules.mileageRecord.dto.MileageResponse;
+import com.danialross.ServiceCycle.modules.mileageRecord.dto.UpdateMileageRecordDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

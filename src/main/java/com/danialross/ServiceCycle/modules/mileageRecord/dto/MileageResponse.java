@@ -1,9 +1,7 @@
-package com.danialross.ServiceCycle.modules.MileageRecord.dto;
+package com.danialross.ServiceCycle.modules.mileageRecord.dto;
 
-import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecord;
-import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
+import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecord;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.danialross.ServiceCycle.modules.MaintenanceRecord;
+package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;

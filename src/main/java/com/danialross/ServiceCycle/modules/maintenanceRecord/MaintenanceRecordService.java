@@ -1,9 +1,7 @@
-package com.danialross.ServiceCycle.modules.MaintenanceRecord;
+package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
-import com.danialross.ServiceCycle.modules.MaintenanceRecord.dto.CreateMaintenanceDTO;
-import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecord;
-import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecordService;
-import com.danialross.ServiceCycle.modules.MileageRecord.dto.CreateMileageRecordDTO;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.CreateMaintenanceDTO;
+import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.PartService;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;

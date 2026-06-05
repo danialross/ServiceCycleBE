@@ -1,6 +1,6 @@
 package com.danialross.ServiceCycle.modules.parts;
 
-import com.danialross.ServiceCycle.modules.MaintenanceRecord.MaintenanceRecord;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.MaintenanceRecord;
 import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
 import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import io.swagger.v3.oas.annotations.media.Schema;

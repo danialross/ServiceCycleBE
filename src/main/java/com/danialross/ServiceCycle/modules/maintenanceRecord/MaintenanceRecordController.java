@@ -1,7 +1,7 @@
-package com.danialross.ServiceCycle.modules.MaintenanceRecord;
+package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
-import com.danialross.ServiceCycle.modules.MaintenanceRecord.dto.CreateMaintenanceDTO;
-import com.danialross.ServiceCycle.modules.MaintenanceRecord.dto.MaintenanceResponse;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.CreateMaintenanceDTO;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.MaintenanceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

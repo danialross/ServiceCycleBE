@@ -1,4 +1,4 @@
-package com.danialross.ServiceCycle.modules.MaintenanceRecord;
+package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

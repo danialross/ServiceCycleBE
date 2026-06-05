@@ -1,7 +1,7 @@
-package com.danialross.ServiceCycle.modules.MileageRecord;
+package com.danialross.ServiceCycle.modules.mileageRecord;
 
-import com.danialross.ServiceCycle.modules.MileageRecord.dto.CreateMileageRecordDTO;
-import com.danialross.ServiceCycle.modules.MileageRecord.dto.UpdateMileageRecordDTO;
+import com.danialross.ServiceCycle.modules.mileageRecord.dto.CreateMileageRecordDTO;
+import com.danialross.ServiceCycle.modules.mileageRecord.dto.UpdateMileageRecordDTO;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
 import lombok.RequiredArgsConstructor;

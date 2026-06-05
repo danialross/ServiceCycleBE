@@ -1,6 +1,5 @@
-package com.danialross.ServiceCycle.modules.MaintenanceRecord.dto;
+package com.danialross.ServiceCycle.modules.maintenanceRecord.dto;
 
-import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
 import com.danialross.ServiceCycle.modules.parts.dto.UpdatePartDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;

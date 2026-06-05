@@ -1,6 +1,5 @@
 package com.danialross.ServiceCycle.modules.vehicles;
 
-import com.danialross.ServiceCycle.modules.MileageRecord.MileageRecord;
 import com.danialross.ServiceCycle.modules.vehicles.dto.CreateVehicleDTO;
 import com.danialross.ServiceCycle.modules.vehicles.dto.UpdateVehicleDTO;
 import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleQueryDTO;
