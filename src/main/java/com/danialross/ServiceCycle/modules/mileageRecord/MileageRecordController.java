@@ -19,6 +19,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/mileage")
 public class MileageRecordController {
     private final MileageRecordService mileageRecordService;
 
@@ -28,7 +29,7 @@ public class MileageRecordController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
 
     })
-    @PostMapping("/mileage")
+    @PostMapping()
     public ResponseEntity<MileageResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMileageRecordDTO mileageRecordDTO){
         UUID userId = UUID.fromString(payload.getSubject());
         MileageRecord response = mileageRecordService.add(userId,mileageRecordDTO);
@@ -40,10 +41,11 @@ public class MileageRecordController {
             @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
             @ApiResponse(responseCode = "400", description = "Mileage smaller than entry before"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "User does not have permission to access"),
             @ApiResponse(responseCode = "404", description = "Record Not Found"),
 
     })
-    @PostMapping("/mileage/{mileageRecordId}")
+    @PostMapping("/{mileageRecordId}")
     public ResponseEntity<MileageResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID mileageRecordId,@Valid @RequestBody UpdateMileageRecordDTO mileageRecordDTO){
         UUID userId = UUID.fromString(payload.getSubject());
         MileageRecord response = mileageRecordService.update(userId,mileageRecordId,mileageRecordDTO);
@@ -54,29 +56,15 @@ public class MileageRecordController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Record deleted successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "404", description = "Record Not Found"),
-
-    })
-    @DeleteMapping("/mileage/{mileageRecordId}")
-    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID mileageRecordId){
-        UUID userId = UUID.fromString(payload.getSubject());
-        UUID deletedRecord = mileageRecordService.delete(userId,mileageRecordId);
-        return ResponseEntity.ok(deletedRecord);
-    }
-
-    @Operation(summary = "Get latest vehicle mileage record")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Get mileage record successfully"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "User does not have permission to access"),
             @ApiResponse(responseCode = "404", description = "Record Not Found"),
 
     })
-    @GetMapping("/mileage/vehicle/{vehicleId}")
-    public ResponseEntity<MileageResponse> getLatestMileageRecord(@AuthenticationPrincipal Jwt payload, UUID vehicleId){
+    @DeleteMapping("/{mileageRecordId}")
+    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID mileageRecordId){
         UUID userId = UUID.fromString(payload.getSubject());
-        MileageRecord record = mileageRecordService.getLatestMileageRecord(userId,vehicleId);
-        return ResponseEntity.ok(MileageResponse.fromRecord(record));
+        UUID deletedRecord = mileageRecordService.delete(userId,mileageRecordId);
+        return ResponseEntity.ok(deletedRecord);
     }
 
     @Operation(summary = "Get mileage record using id")
@@ -87,12 +75,28 @@ public class MileageRecordController {
             @ApiResponse(responseCode = "404", description = "Record Not Found"),
 
     })
-    @GetMapping("/mileage/{mileageRecordId}")
+    @GetMapping("/{mileageRecordId}")
     public ResponseEntity<MileageResponse> getMileageRecord(@AuthenticationPrincipal Jwt payload, UUID mileageRecordId){
         UUID userId = UUID.fromString(payload.getSubject());
         MileageRecord record = mileageRecordService.findOneWithAuthCheck(userId,mileageRecordId);
         return ResponseEntity.ok(MileageResponse.fromRecord(record));
     }
+
+    @Operation(summary = "Get latest vehicle mileage record")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get mileage record successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "User does not have permission to access"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
+
+    })
+    @GetMapping("/vehicle/{vehicleId}")
+    public ResponseEntity<MileageResponse> getLatestMileageRecord(@AuthenticationPrincipal Jwt payload, UUID vehicleId){
+        UUID userId = UUID.fromString(payload.getSubject());
+        MileageRecord record = mileageRecordService.getLatestMileageRecord(userId,vehicleId);
+        return ResponseEntity.ok(MileageResponse.fromRecord(record));
+    }
+
 
     @Operation(summary = "Get all mileage records for vehicle with id")
     @ApiResponses(value = {
@@ -102,7 +106,7 @@ public class MileageRecordController {
             @ApiResponse(responseCode = "404", description = "Record Not Found"),
 
     })
-    @GetMapping("/mileage/vehicle/{vehicleId}/all")
+    @GetMapping("/vehicle/{vehicleId}/all")
     public ResponseEntity<List<MileageResponse>> getAllMileageRecord(@AuthenticationPrincipal Jwt payload, UUID vehicleId){
         UUID userId = UUID.fromString(payload.getSubject());
         List<MileageRecord> records = mileageRecordService.findAllWithAuthCheck(userId,vehicleId);

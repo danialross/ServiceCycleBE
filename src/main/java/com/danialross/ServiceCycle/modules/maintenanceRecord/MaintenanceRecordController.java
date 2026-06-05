@@ -12,11 +12,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("maintenance")
+@RequestMapping("/maintenance")
 public class MaintenanceRecordController {
     private final MaintenanceRecordService maintenanceRecordService;
 
@@ -41,8 +43,25 @@ public class MaintenanceRecordController {
     @GetMapping("/{maintenanceRecordId}")
     private ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        MaintenanceRecord maintenance = maintenanceRecordService.getByOwner(ownerId,maintenanceRecordId);
+        MaintenanceRecord maintenance = maintenanceRecordService.findOneWithAccessCheck(ownerId,maintenanceRecordId);
         MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "Retrieve all maintenance records")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "User doesn't have access"),
+    })
+    @GetMapping("/{maintenanceRecordId}/all")
+    private ResponseEntity<List<MaintenanceResponse>> getAll(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+        List<MaintenanceRecord> records = maintenanceRecordService.findAllWithAccessCheck(ownerId,maintenanceRecordId);
+        List<MaintenanceResponse> response = new ArrayList<>();
+        for(MaintenanceRecord record : records ){
+            response.add(MaintenanceResponse.fromMaintenance(record));
+        }
         return ResponseEntity.ok().body(response);
     }
 }

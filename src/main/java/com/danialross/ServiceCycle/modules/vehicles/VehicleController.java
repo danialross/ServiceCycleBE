@@ -2,7 +2,6 @@ package com.danialross.ServiceCycle.modules.vehicles;
 
 import com.danialross.ServiceCycle.modules.vehicles.dto.CreateVehicleDTO;
 import com.danialross.ServiceCycle.modules.vehicles.dto.UpdateVehicleDTO;
-import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleQueryDTO;
 import com.danialross.ServiceCycle.modules.vehicles.dto.VehicleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,7 +45,7 @@ public class VehicleController {
     @PostMapping("/{vehicleId}")
     public ResponseEntity<VehicleResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID vehicleId,@Valid @RequestBody UpdateVehicleDTO vehicle){
         UUID userId = UUID.fromString(payload.getSubject());
-        Vehicle updatedVehicle = vehicleService.update(userId,vehicleId, vehicle);
+        Vehicle updatedVehicle = vehicleService.updateWithAccessCheck(userId,vehicleId, vehicle);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(updatedVehicle));
     }
 
@@ -59,7 +58,7 @@ public class VehicleController {
     @DeleteMapping("/{vehicleId}")
     public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload,@PathVariable UUID vehicleId){
         UUID userId = UUID.fromString(payload.getSubject());
-        UUID deletedVehicleId = vehicleService.delete(userId, vehicleId);
+        UUID deletedVehicleId = vehicleService.deleteWithAuthCheck(userId, vehicleId);
         return ResponseEntity.ok().body(deletedVehicleId);
     }
 
@@ -70,10 +69,9 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
     @GetMapping()
-    public ResponseEntity<List<VehicleResponse>> findAll(@AuthenticationPrincipal Jwt payload,@Valid VehicleQueryDTO queries){
+    public ResponseEntity<List<VehicleResponse>> findAll(@AuthenticationPrincipal Jwt payload){
         UUID userId = UUID.fromString(payload.getSubject());
-
-        List<Vehicle> allVehicles = vehicleService.findAll(userId, queries);
+        List<Vehicle> allVehicles = vehicleService.findAllByUserId(userId);
         List<VehicleResponse> response = new ArrayList<>();
         for(Vehicle vehicle: allVehicles){
             response.add(VehicleResponse.fromVehicle(vehicle));
@@ -90,8 +88,7 @@ public class VehicleController {
     @GetMapping("/{vehicleId}")
     public ResponseEntity<VehicleResponse> find(@AuthenticationPrincipal Jwt payload,@PathVariable UUID vehicleId){
         UUID userId = UUID.fromString(payload.getSubject());
-        vehicleService.checkVehicleWithOwnerExist(vehicleId,userId);
-        Vehicle response = vehicleService.findOne(vehicleId);
+        Vehicle response = vehicleService.findOneWithAccessCheck(userId,vehicleId);
         return ResponseEntity.ok().body(VehicleResponse.fromVehicle(response));
     }
 }

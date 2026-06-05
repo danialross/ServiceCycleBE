@@ -19,7 +19,6 @@ public class MileageRecordService {
     private final VehicleService vehicleService;
 
     public MileageRecord add(UUID userId, CreateMileageRecordDTO mileageDto){
-        vehicleService.checkVehicleWithOwnerExist(mileageDto.getVehicleId(),userId);
 
         MileageRecord entryBeforeDtoDate = mileageRecordRepository.findEntryBefore(mileageDto.getVehicleId(), LocalDate.now(),mileageDto.getMileage(),null).orElse(null);
 
@@ -28,15 +27,13 @@ public class MileageRecordService {
                     "Mileage cannot be less than entry before it of " + entryBeforeDtoDate.getMileage() + "km");
         }
 
-        Vehicle vehicle = vehicleService.findOne(mileageDto.getVehicleId());
+        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,mileageDto.getVehicleId());
         MileageRecord newRecord = mileageDto.toRecord(vehicle);
         newRecord.setDate(LocalDate.now());
         return mileageRecordRepository.save(newRecord);
     }
 
     public MileageRecord update(UUID userId,UUID mileageRecordId, UpdateMileageRecordDTO mileageDto){
-        vehicleService.checkVehicleWithOwnerExist(mileageDto.getVehicleId(),userId);
-
         MileageRecord entryBeforeDtoDate = mileageRecordRepository.findEntryBefore(mileageDto.getVehicleId(), mileageDto.getDate(),mileageDto.getMileage(),mileageRecordId).orElse(null);
         MileageRecord entryAfterDtoDate = mileageRecordRepository.findEntryAfter(mileageDto.getVehicleId(), mileageDto.getDate(),mileageDto.getMileage(),mileageRecordId).orElse(null);
 
@@ -54,7 +51,7 @@ public class MileageRecordService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, error.toString());
         }
 
-        Vehicle vehicle = vehicleService.findOne(mileageDto.getVehicleId());
+        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,mileageDto.getVehicleId());
         MileageRecord newRecord = mileageDto.toRecord(vehicle);
         newRecord.setId(mileageRecordId);
         return mileageRecordRepository.save(newRecord);

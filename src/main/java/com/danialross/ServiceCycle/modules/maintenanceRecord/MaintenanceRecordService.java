@@ -27,8 +27,7 @@ public class MaintenanceRecordService {
 
     @Transactional
     public MaintenanceRecord add(UUID userId, CreateMaintenanceDTO createMaintenanceDTO){
-        vehicleService.checkVehicleWithOwnerExist(createMaintenanceDTO.getVehicleId(),userId);
-        Vehicle vehicle = vehicleService.findOne(createMaintenanceDTO.getVehicleId());
+        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,createMaintenanceDTO.getVehicleId());
 
         for(CreatePartDTO part : createMaintenanceDTO.getParts()){
             partService.validatePart(part);
@@ -48,17 +47,20 @@ public class MaintenanceRecordService {
         return maintenanceRecordRepository.save(newRecord);
     }
 
-    public MaintenanceRecord findOne(UUID maintenanceId){
-        return maintenanceRecordRepository.findById(maintenanceId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Maintenance with id: " + maintenanceId + "does not exist"));
+    public MaintenanceRecord findOneWithAccessCheck(UUID userId, UUID maintenanceId){
+        MaintenanceRecord record = maintenanceRecordRepository.findById(maintenanceId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Maintenance with id: " + maintenanceId + "does not exist"));
+        checkAccess(userId,record);
+        return record;
     }
 
-    public MaintenanceRecord getByOwner(UUID ownerId, UUID maintenanceId){
+    public List<MaintenanceRecord> findAllWithAccessCheck(UUID userId, UUID vehicleId){
+        List<MaintenanceRecord> records = maintenanceRecordRepository.findByVehicleId(vehicleId);
+        checkAccess(userId,records.getFirst());
+        return records;
+    }
 
-        MaintenanceRecord record = findOne(maintenanceId);
-
-        if(!record.getVehicle().getOwnerId().toString().equals(ownerId.toString()))
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Owner : " + ownerId + " cannot retrieve record");
-
-        return record;
+    public void checkAccess(UUID userId,MaintenanceRecord record){
+        if(!record.getVehicle().getOwnerId().toString().equals(userId.toString()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User : " + userId + " cannot retrieve record");
     }
 }
