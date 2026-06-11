@@ -28,7 +28,7 @@ public class MaintenanceRecordController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
      })
     @PostMapping("/")
-    private ResponseEntity<MaintenanceResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMaintenanceDTO dto){
+    public ResponseEntity<MaintenanceResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMaintenanceDTO dto){
         UUID ownerId = UUID.fromString(payload.getSubject());
         MaintenanceRecord maintenance = maintenanceRecordService.add(ownerId,dto);
         MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
@@ -41,7 +41,7 @@ public class MaintenanceRecordController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
     })
     @GetMapping("/{maintenanceRecordId}")
-    private ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId){
+    public ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId){
         UUID ownerId = UUID.fromString(payload.getSubject());
         MaintenanceRecord maintenance = maintenanceRecordService.findOneWithAccessCheck(ownerId,maintenanceRecordId);
         MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
@@ -55,7 +55,7 @@ public class MaintenanceRecordController {
             @ApiResponse(responseCode = "403", description = "User doesn't have access"),
     })
     @GetMapping("/{maintenanceRecordId}/all")
-    private ResponseEntity<List<MaintenanceResponse>> getAll(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
+    public ResponseEntity<List<MaintenanceResponse>> getAll(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
         UUID ownerId = UUID.fromString(payload.getSubject());
         List<MaintenanceRecord> records = maintenanceRecordService.findAllWithAccessCheck(ownerId,maintenanceRecordId);
         List<MaintenanceResponse> response = new ArrayList<>();

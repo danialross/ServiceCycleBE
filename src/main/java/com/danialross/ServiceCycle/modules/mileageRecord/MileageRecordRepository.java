@@ -1,5 +1,6 @@
 package com.danialross.ServiceCycle.modules.mileageRecord;
 
+import com.danialross.ServiceCycle.modules.parts.Part;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -33,5 +34,6 @@ public interface MileageRecordRepository extends JpaRepository<MileageRecord, UU
 
     Optional<MileageRecord> findTopByVehicleIdOrderByDateDescMileageDesc(UUID vehicleId);
     List<MileageRecord> findByVehicleIdOrderByDateDesc(UUID vehicleId);
+    Optional<MileageRecord> findTopByVehicleIdOrderByDateAsc(UUID vehicleId);
 }
 

@@ -50,6 +50,11 @@ public class Part {
     @Schema(description = "Part's life span in months")
     private Integer lifespanMonths;
 
+    @Column(nullable = false)
+    @Schema(description = "When this part should replaced")
+    private Integer mileageToChange;
+
+
     @ManyToOne
     @JoinColumn(name = "maintenance_record_id",nullable = false)
     private MaintenanceRecord maintenanceRecord;
@@ -57,4 +62,8 @@ public class Part {
     @Column()
     @Schema(description = "Part's index")
     private Integer index;
+
+    @Column()
+    @Schema(description = "To check if part is currently in use")
+    private Boolean isActive;
 }

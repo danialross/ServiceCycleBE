@@ -89,4 +89,17 @@ public class MileageRecordService {
     public void checkAccess(UUID userId,MileageRecord record){
         if(record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
+
+    public int getMonthlyUsage(UUID userId, UUID vehicleId){
+        MileageRecord latestRecord = getLatestMileageRecord(userId,vehicleId);
+        MileageRecord firstRecord = mileageRecordRepository.findTopByVehicleIdOrderByDateAsc(vehicleId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Mileage Record with for vehicle ID: " + vehicleId + " not found"));
+        checkAccess(userId,firstRecord);
+
+        int mileageUsed = latestRecord.getMileage() - firstRecord.getMileage();
+        LocalDate ownedDate = firstRecord.getDate();
+        // check conversion
+        int daysOwned = ownedDate.compareTo(LocalDate.now());
+
+        return mileageUsed/daysOwned;
+    }
 }
