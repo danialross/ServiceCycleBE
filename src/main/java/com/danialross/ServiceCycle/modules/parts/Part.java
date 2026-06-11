@@ -50,11 +50,6 @@ public class Part {
     @Schema(description = "Part's life span in months")
     private Integer lifespanMonths;
 
-    @Column(nullable = false)
-    @Schema(description = "When this part should replaced")
-    private Integer mileageToChange;
-
-
     @ManyToOne
     @JoinColumn(name = "maintenance_record_id",nullable = false)
     private MaintenanceRecord maintenanceRecord;
