@@ -8,6 +8,4 @@ public interface PartWithInstalledMileage {
     Integer getInstallMileage();
     LocalDate getInstallDate();
     Part getPart();
-    Integer getLifespanKms();
-    Integer getLifespanMonths();
 }

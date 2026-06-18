@@ -87,7 +87,7 @@ public class MileageRecordService {
     }
 
     public void checkAccess(UUID userId,MileageRecord record){
-        if(record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        if(!record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access Denied");
     }
 
     public int getMonthlyUsage(UUID userId, UUID vehicleId){

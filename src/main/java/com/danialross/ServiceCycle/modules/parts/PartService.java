@@ -5,7 +5,6 @@ import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.dto.*;
 import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -69,39 +68,54 @@ public class PartService {
     public PartsStatus getPartsStatus(UUID ownerId, UUID vehicleId){
         List<PartWithInstalledMileage> partsUsedByVehicle = partRepository.findActiveParts(vehicleId,ownerId);
 
-        List<ExpiringPart> expiringParts = new ArrayList<>();
-        List<Part> expiredParts = new ArrayList<>();
-        List<Part> goodParts = new ArrayList<>();
+        List<PartStatusSummary> expiringParts = new ArrayList<>();
+        List<PartStatusSummary> expiredParts = new ArrayList<>();
+        List<PartStatusSummary> goodParts = new ArrayList<>();
 
         MileageRecord vehicleMileage = mileageRecordService.getLatestMileageRecord(ownerId,vehicleId);
-
+        System.out.println(partsUsedByVehicle);
         for( PartWithInstalledMileage part : partsUsedByVehicle){
 
+            boolean nearingDuration = LocalDate.now().isAfter(part.getInstallDate().plusMonths(part.getPart().getLifespanMonths()-1));
+            boolean nearingDistance = vehicleMileage.getMileage() >= part.getInstallMileage() + part.getPart().getLifespanKms() + 1000;
 
-            boolean nearingDuration = LocalDate.now().isAfter(part.getInstallDate().plusMonths(part.getLifespanMonths()-1));
-            boolean nearingDistance = vehicleMileage.getMileage() >= part.getInstallMileage() + part.getLifespanKms() + 1000;
-            boolean isPartExpired = vehicleMileage.getMileage() >= part.getInstallMileage() + part.getLifespanKms() ||
-                    LocalDate.now().isAfter(part.getInstallDate().plusMonths(part.getLifespanMonths()));
+            boolean isPartMileageOverdue = vehicleMileage.getMileage() >= part.getInstallMileage() + part.getPart().getLifespanKms();
+            boolean isPartDurationOverdue = LocalDate.now().isAfter(part.getInstallDate().plusMonths(part.getPart().getLifespanMonths()));
 
-            if(isPartExpired){
-                expiredParts.add(part.getPart());
+            PartStatusSummary.PartStatusSummaryBuilder summary = PartStatusSummary.builder().part(PartResponse.fromPart(part.getPart()));
 
-            }else if(nearingDistance ||  nearingDuration){
-                ExpiringPart.ExpiringPartBuilder expiringPart = ExpiringPart.builder();
+            if(isPartMileageOverdue || isPartDurationOverdue ){
 
-                if(nearingDistance){
-                    Integer expiringIn = part.getInstallMileage() + part.getLifespanKms() - vehicleMileage.getMileage();
-                    expiringPart.expiringInKm(expiringIn);
+                if(isPartMileageOverdue){
+
+                summary.kmsOverdue(part.getInstallMileage() + part.getPart().getLifespanKms() - vehicleMileage.getMileage());
+
                 }
-                if(nearingDuration){
-                    LocalDate expiryDate = part.getInstallDate().plusMonths(part.getLifespanMonths());
-                    long monthsRemaining = ChronoUnit.MONTHS.between(LocalDate.now(), expiryDate);
-                    expiringPart.expiringInMonths((int)monthsRemaining);
+
+                if(isPartDurationOverdue){
+                    summary.monthsOverdue(
+                            (int) ChronoUnit.MONTHS.between(
+                                    part.getInstallDate().plusMonths(part.getPart().getLifespanKms()),
+                                            LocalDate.now()
+                            ));
                 }
-                expiringParts.add(expiringPart.build());
+
+                expiredParts.add(summary.build());
 
             }else{
-                goodParts.add(part.getPart());
+
+                Integer expiringIn = part.getInstallMileage() + part.getPart().getLifespanKms() - vehicleMileage.getMileage();
+                summary.kmsRemaining(expiringIn);
+
+                LocalDate expiryDate = part.getInstallDate().plusMonths(part.getPart().getLifespanMonths());
+                long monthsRemaining = ChronoUnit.MONTHS.between(LocalDate.now(), expiryDate);
+                summary.monthsRemaining((int)monthsRemaining);
+
+                if(nearingDistance ||  nearingDuration){
+                     expiringParts.add(summary.build());
+                }else{
+                    goodParts.add(summary.build());
+                }
             }
         }
         return PartsStatus.builder().expiringParts(expiringParts).expiredParts(expiredParts).goodParts(goodParts).build();

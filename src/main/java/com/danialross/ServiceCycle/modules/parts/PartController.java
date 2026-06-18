@@ -26,7 +26,7 @@ public class PartController {
     private final PartService partService;
     private final VehicleService vehicleService;
 
-    @Operation(summary = "Get status of all parts attached to vehicel")
+    @Operation(summary = "Get status of all parts attached to vehicle")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Parts retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),

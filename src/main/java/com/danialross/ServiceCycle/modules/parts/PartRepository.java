@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface PartRepository extends JpaRepository<Part, UUID> {
     @Query("""
-            select p as part, mr.mileage as installMileage, mr.date as installDate
+            select p as part, mr.vehicleMileage as installMileage, mr.date as installDate
             from MaintenanceRecord mr
             join mr.parts p
             where mr.vehicle.id = :vehicleId
