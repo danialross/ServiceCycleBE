@@ -88,15 +88,15 @@ public class PartService {
 
                 if(isPartMileageOverdue){
 
-                summary.kmsOverdue(part.getInstallMileage() + part.getPart().getLifespanKms() - vehicleMileage.getMileage());
+                    summary.kmsOverdue(vehicleMileage.getMileage() - (part.getInstallMileage() + part.getPart().getLifespanKms()));
 
                 }
 
                 if(isPartDurationOverdue){
                     summary.monthsOverdue(
                             (int) ChronoUnit.MONTHS.between(
-                                    part.getInstallDate().plusMonths(part.getPart().getLifespanKms()),
-                                            LocalDate.now()
+                                    part.getInstallDate().plusMonths(part.getPart().getLifespanMonths()),
+                                    LocalDate.now()
                             ));
                 }
 
