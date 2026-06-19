@@ -3,6 +3,7 @@ package com.danialross.ServiceCycle.modules.parts;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecord;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.dto.*;
+import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
 import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -119,5 +121,13 @@ public class PartService {
             }
         }
         return PartsStatus.builder().expiringParts(expiringParts).expiredParts(expiredParts).goodParts(goodParts).build();
+    }
+
+    public void deactivatePart(PartType type,PartPosition position){
+        partRepository.findByTypeAndPositionAndIsActiveTrue(type, position)
+                .ifPresent(part -> {
+                    part.setIsActive(false);
+                    partRepository.save(part);
+                });
     }
 }

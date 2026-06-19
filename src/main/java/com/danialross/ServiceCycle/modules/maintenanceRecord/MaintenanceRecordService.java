@@ -5,6 +5,9 @@ import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.PartService;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
+import com.danialross.ServiceCycle.modules.parts.dto.UpdatePartDTO;
+import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
+import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
 import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
 import jakarta.transaction.Transactional;
@@ -28,9 +31,12 @@ public class MaintenanceRecordService {
     @Transactional
     public MaintenanceRecord add(UUID userId, CreateMaintenanceDTO createMaintenanceDTO){
         Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,createMaintenanceDTO.getVehicleId());
-
         for(CreatePartDTO part : createMaintenanceDTO.getParts()){
             partService.validatePart(part);
+            partService.deactivatePart(
+                    PartType.valueOf(part.getType()),
+                    part.getPosition() != null ? PartPosition.valueOf(part.getPosition()) : null
+                    );
         }
 
         MaintenanceRecord newRecord = createMaintenanceDTO.toRecord(vehicle);
@@ -39,6 +45,7 @@ public class MaintenanceRecordService {
         for(CreatePartDTO createPartDTO : createMaintenanceDTO.getParts()){
             Part part = createPartDTO.toEntity();
             part.setMaintenanceRecord(newRecord);
+            part.setIsActive(true);
             parts.add(part);
         }
         newRecord.setParts(parts);
@@ -62,5 +69,9 @@ public class MaintenanceRecordService {
     public void checkAccess(UUID userId,MaintenanceRecord record){
         if(!record.getVehicle().getOwnerId().toString().equals(userId.toString()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User : " + userId + " cannot retrieve record");
+    }
+
+    public MaintenanceRecord update(UUID userId, UpdatePartDTO dto){
+
     }
 }
