@@ -1,6 +1,7 @@
 package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
 import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.CreateMaintenanceDTO;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.UpdateMaintenanceDTO;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.PartService;
@@ -71,7 +72,32 @@ public class MaintenanceRecordService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User : " + userId + " cannot retrieve record");
     }
 
-    public MaintenanceRecord update(UUID userId, UpdatePartDTO dto){
+    public MaintenanceRecord update(UUID userId,UUID maintenanceRecordId, UpdateMaintenanceDTO dto){
+        MaintenanceRecord record = findOneWithAccessCheck(userId,maintenanceRecordId);
 
+        //maintenance details
+        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,dto.getVehicleId());
+        record.setVehicle(vehicle);
+
+        if (dto.getDate() != null) record.setDate(dto.getDate());
+        if (dto.getDescription() != null) record.setDescription(dto.getDescription());
+        if (dto.getVehicleMileage() != null) record.setVehicleMileage(dto.getVehicleMileage());
+
+        //parts details
+
+        for(UpdatePartDTO updatingPart : dto.getParts()){
+            Part currentPart = partService.getPart(updatingPart.getPartId());
+
+            if(updatingPart.getDescription() != null) currentPart.setDescription(updatingPart.getDescription());
+            if(updatingPart.getPosition() != null) currentPart.setPosition(PartPosition.valueOf(updatingPart.getPosition()));
+            if(updatingPart.getBrand() != null) currentPart.setBrand(updatingPart.getBrand());
+            if(updatingPart.getIndex() != null) currentPart.setIndex(updatingPart.getIndex());
+            if(updatingPart.getPrice() != null) currentPart.setPrice(updatingPart.getPrice());
+            if(updatingPart.getLifespanKms() != null) currentPart.setLifespanKms(updatingPart.getLifespanKms());
+            if(updatingPart.getLifespanMonths() != null) currentPart.setLifespanMonths(updatingPart.getLifespanMonths());
+            if(updatingPart.getType() != null) currentPart.setType(PartType.valueOf(updatingPart.getType()));
+        }
+
+        return maintenanceRecordRepository.save(record);
     }
 }

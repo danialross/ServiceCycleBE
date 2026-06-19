@@ -2,6 +2,7 @@ package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
 import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.CreateMaintenanceDTO;
 import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.MaintenanceResponse;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.UpdateMaintenanceDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +27,8 @@ public class MaintenanceRecordController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Record created successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-     })
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
     @PostMapping("/")
     public ResponseEntity<MaintenanceResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMaintenanceDTO dto){
         UUID ownerId = UUID.fromString(payload.getSubject());
@@ -62,6 +64,21 @@ public class MaintenanceRecordController {
         for(MaintenanceRecord record : records ){
             response.add(MaintenanceResponse.fromMaintenance(record));
         }
+        return ResponseEntity.ok().body(response);
+    }
+
+    @Operation(summary = "Update a maintenance record")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Record updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Bad Input"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+    })
+    @PostMapping("/{maintenanceRecordId}")
+    public ResponseEntity<MaintenanceResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId,@Valid @RequestBody UpdateMaintenanceDTO dto){
+        UUID userId = UUID.fromString(payload.getSubject());
+        MaintenanceRecord maintenance = maintenanceRecordService.update(userId,maintenanceRecordId,dto);
+        MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
         return ResponseEntity.ok().body(response);
     }
 }

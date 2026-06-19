@@ -28,18 +28,18 @@ public class Part {
     @GeneratedValue()
     private UUID id;
 
-    @Column()
+    @Column
     private String brand;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PartType type;
 
-    @Column()
+    @Column
     @Enumerated(EnumType.STRING)
     private PartPosition position;
 
-    @Column()
+    @Column
     private BigDecimal price;
 
     @Column(nullable = false)
@@ -54,11 +54,15 @@ public class Part {
     @JoinColumn(name = "maintenance_record_id",nullable = false)
     private MaintenanceRecord maintenanceRecord;
 
-    @Column()
+    @Column
     @Schema(description = "Part's index")
     private Integer index;
 
-    @Column()
+    @Column
     @Schema(description = "To check if part is currently in use")
     private Boolean isActive;
+
+    @Column
+    @Schema(description = "parts description")
+    private String description;
 }

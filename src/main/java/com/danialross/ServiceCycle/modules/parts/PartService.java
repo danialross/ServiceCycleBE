@@ -1,5 +1,7 @@
 package com.danialross.ServiceCycle.modules.parts;
 
+import com.danialross.ServiceCycle.modules.maintenanceRecord.MaintenanceRecord;
+import com.danialross.ServiceCycle.modules.maintenanceRecord.MaintenanceRecordService;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecord;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.dto.*;
@@ -15,7 +17,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -23,21 +24,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PartService {
     private final PartRepository partRepository;
-    private final VehicleService vehicleService;
     private final MileageRecordService mileageRecordService;
 
-    public Part update(UUID ownerId, UpdatePartDTO partDTO) {
-        return new Part();
-    }
-
-    public Part delete(UUID ownerId, UpdatePartDTO partDTO) {
-        return new Part();
-    }
-
-    public Part create(CreatePartDTO partDTO) {
-        return new Part();
-    }
-
+    //Creation, Update and Delete happens by changing the maintenance record itself
     public void validatePart(CreatePartDTO dto) {
 
         //parts with multiple must have position and index else position and index must be null
@@ -129,5 +118,9 @@ public class PartService {
                     part.setIsActive(false);
                     partRepository.save(part);
                 });
+    }
+
+    public Part getPart(UUID partId){
+        return partRepository.findById(partId).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Part with Id: " + partId + " not found"));
     }
 }

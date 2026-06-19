@@ -19,11 +19,6 @@ public class UpdatePartDTO {
     @NotNull(message = "Part Id cannot be null")
     UUID partId;
 
-    @Schema(description = "Part Id")
-    @NotNull(message = "Vehicle Id cannot be null")
-    UUID vehicleId;
-
-    @NotNull(message = "Part type is required")
     @Pattern(regexp = PartType.regexPattern,
             message = "Part Type must one of the following : "+PartType.allValues)
     @Schema(description = "The type of the part")

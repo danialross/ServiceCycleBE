@@ -45,6 +45,9 @@ public class CreatePartDTO {
     @Positive(message = "Index must be 1 or more")
     private Integer index;
 
+    @Schema(description = "parts description")
+    private String description;
+
     public Part toEntity(){
         return Part.builder()
                 .type(this.getType() != null ? PartType.valueOf(this.getType()): null)
@@ -54,6 +57,7 @@ public class CreatePartDTO {
                 .lifespanKms(this.getLifespanKms())
                 .lifespanMonths(this.getLifespanMonths())
                 .brand(this.getBrand())
+                .description(this.getDescription())
                 .build();
 
     }
