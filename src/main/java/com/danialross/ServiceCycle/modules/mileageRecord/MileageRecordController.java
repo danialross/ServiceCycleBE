@@ -118,4 +118,19 @@ public class MileageRecordController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Get monthly average mileage for vehicle with id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get mileage records successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "User does not have permission to access"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
+
+    })
+    @GetMapping("/vehicle/{vehicleId}/monthly-usage")
+    public ResponseEntity<Float> getMonthlyUsage(@AuthenticationPrincipal Jwt payload, UUID vehicleId){
+        UUID userId = UUID.fromString(payload.getSubject());
+        Float averageMileagePerMonth = mileageRecordService.getMonthlyUsage(userId,vehicleId);
+        return ResponseEntity.ok(averageMileagePerMonth);
+    }
 }

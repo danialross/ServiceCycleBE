@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -90,16 +91,15 @@ public class MileageRecordService {
         if(!record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access Denied");
     }
 
-    public int getMonthlyUsage(UUID userId, UUID vehicleId){
+    public float getMonthlyUsage(UUID userId, UUID vehicleId){
         MileageRecord latestRecord = getLatestMileageRecord(userId,vehicleId);
         MileageRecord firstRecord = mileageRecordRepository.findTopByVehicleIdOrderByDateAsc(vehicleId).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND,"Mileage Record with for vehicle ID: " + vehicleId + " not found"));
         checkAccess(userId,firstRecord);
 
-        int mileageUsed = latestRecord.getMileage() - firstRecord.getMileage();
-        LocalDate ownedDate = firstRecord.getDate();
-        // check conversion
-        int daysOwned = ownedDate.compareTo(LocalDate.now());
+        long monthsOwned = ChronoUnit.MONTHS.between(firstRecord.getDate(),latestRecord.getDate());
 
-        return mileageUsed/daysOwned;
+        if(monthsOwned == 0) monthsOwned = 1;
+
+        return (float) latestRecord.getMileage() /monthsOwned;
     }
 }

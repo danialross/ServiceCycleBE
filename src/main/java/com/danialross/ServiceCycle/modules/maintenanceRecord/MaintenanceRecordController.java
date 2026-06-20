@@ -27,6 +27,7 @@ public class MaintenanceRecordController {
             @ApiResponse(responseCode = "200", description = "Record created successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
     })
     @PostMapping("/")
     public ResponseEntity<MaintenanceResponse> add(@AuthenticationPrincipal Jwt payload,@Valid @RequestBody CreateMaintenanceDTO dto){
@@ -40,6 +41,8 @@ public class MaintenanceRecordController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
     })
     @GetMapping("/{maintenanceRecordId}")
     public ResponseEntity<MaintenanceResponse> get(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId){
@@ -53,7 +56,8 @@ public class MaintenanceRecordController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "User doesn't have access"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
     })
     @GetMapping("/{maintenanceRecordId}/all")
     public ResponseEntity<List<MaintenanceResponse>> getAll(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
@@ -71,7 +75,8 @@ public class MaintenanceRecordController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Record deleted successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "User doesn't have access"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "404", description = "Record Not Found"),
     })
     @DeleteMapping("/{maintenanceRecordId}")
     public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
