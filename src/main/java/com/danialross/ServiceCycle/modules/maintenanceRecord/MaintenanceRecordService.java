@@ -1,12 +1,11 @@
 package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
 import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.CreateMaintenanceDTO;
-import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.UpdateMaintenanceDTO;
+import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecord;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.Part;
 import com.danialross.ServiceCycle.modules.parts.PartService;
 import com.danialross.ServiceCycle.modules.parts.dto.CreatePartDTO;
-import com.danialross.ServiceCycle.modules.parts.dto.UpdatePartDTO;
 import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
 import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import com.danialross.ServiceCycle.modules.vehicles.Vehicle;
@@ -31,24 +30,32 @@ public class MaintenanceRecordService {
 
     @Transactional
     public MaintenanceRecord add(UUID userId, CreateMaintenanceDTO createMaintenanceDTO){
-        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,createMaintenanceDTO.getVehicleId());
-        for(CreatePartDTO part : createMaintenanceDTO.getParts()){
-            partService.validatePart(part);
-            partService.deactivatePart(
-                    PartType.valueOf(part.getType()),
-                    part.getPosition() != null ? PartPosition.valueOf(part.getPosition()) : null
-                    );
-        }
+        partService.checkDuplicateParts(createMaintenanceDTO.getParts());
+        MileageRecord currentMileage = mileageRecordService.getLatestMileageRecord(userId,createMaintenanceDTO.getVehicleId());
+        if(createMaintenanceDTO.getVehicleMileage() < currentMileage.getMileage()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Mileage must be more than or equal to currently");
 
-        MaintenanceRecord newRecord = createMaintenanceDTO.toRecord(vehicle);
+        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,createMaintenanceDTO.getVehicleId());
 
         List<Part> parts = new ArrayList<>();
-        for(CreatePartDTO createPartDTO : createMaintenanceDTO.getParts()){
-            Part part = createPartDTO.toEntity();
-            part.setMaintenanceRecord(newRecord);
-            part.setIsActive(true);
-            parts.add(part);
+        MaintenanceRecord newRecord = createMaintenanceDTO.toRecord(vehicle);
+
+        for(CreatePartDTO part : createMaintenanceDTO.getParts()){
+            partService.validatePart(part);
+
+            partService.deactivateLatest(
+                    vehicle.getId(),
+                    PartType.valueOf(part.getType()),
+                    part.getPosition() != null ? PartPosition.valueOf(part.getPosition()) : null,
+                    part.getIndex()
+            );
+
+            //activating new parts
+            Part newPart = part.toEntity();
+            newPart.setMaintenanceRecord(newRecord);
+            newPart.setIsActive(true);
+            parts.add(newPart);
         }
+
         newRecord.setParts(parts);
         mileageRecordService.add(userId,createMaintenanceDTO.toMileageRecordDTO(vehicle));
 
@@ -72,32 +79,34 @@ public class MaintenanceRecordService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User : " + userId + " cannot retrieve record");
     }
 
-    public MaintenanceRecord update(UUID userId,UUID maintenanceRecordId, UpdateMaintenanceDTO dto){
-        MaintenanceRecord record = findOneWithAccessCheck(userId,maintenanceRecordId);
+    @Transactional
+    public void delete(UUID userId,UUID maintenanceRecordId){
+        MaintenanceRecord record = maintenanceRecordRepository.findById(maintenanceRecordId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Record with id: " + maintenanceRecordId + " not found"));
 
-        //maintenance details
-        Vehicle vehicle = vehicleService.findOneWithAccessCheck(userId,dto.getVehicleId());
-        record.setVehicle(vehicle);
+        if(!record.getVehicle().getOwnerId().equals(userId)) throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access Denied");
 
-        if (dto.getDate() != null) record.setDate(dto.getDate());
-        if (dto.getDescription() != null) record.setDescription(dto.getDescription());
-        if (dto.getVehicleMileage() != null) record.setVehicleMileage(dto.getVehicleMileage());
 
-        //parts details
+        List<Part> activeParts = new ArrayList<>();
 
-        for(UpdatePartDTO updatingPart : dto.getParts()){
-            Part currentPart = partService.getPart(updatingPart.getPartId());
 
-            if(updatingPart.getDescription() != null) currentPart.setDescription(updatingPart.getDescription());
-            if(updatingPart.getPosition() != null) currentPart.setPosition(PartPosition.valueOf(updatingPart.getPosition()));
-            if(updatingPart.getBrand() != null) currentPart.setBrand(updatingPart.getBrand());
-            if(updatingPart.getIndex() != null) currentPart.setIndex(updatingPart.getIndex());
-            if(updatingPart.getPrice() != null) currentPart.setPrice(updatingPart.getPrice());
-            if(updatingPart.getLifespanKms() != null) currentPart.setLifespanKms(updatingPart.getLifespanKms());
-            if(updatingPart.getLifespanMonths() != null) currentPart.setLifespanMonths(updatingPart.getLifespanMonths());
-            if(updatingPart.getType() != null) currentPart.setType(PartType.valueOf(updatingPart.getType()));
+        for( Part part : record.getParts()){
+            if(part.getIsActive() == true) activeParts.add(part);
         }
 
-        return maintenanceRecordRepository.save(record);
+        //remove record
+        maintenanceRecordRepository.delete(record);
+
+
+        //reactivate latest part
+        if(!activeParts.isEmpty()){
+            for(Part activePart : activeParts) {
+                partService.activatePart(
+                        record.getVehicle().getId(),
+                        activePart.getType(),
+                        activePart.getPosition(),
+                        activePart.getIndex()
+                        );
+            }
+        }
     }
 }

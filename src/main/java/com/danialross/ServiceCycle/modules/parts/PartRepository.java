@@ -1,6 +1,6 @@
 package com.danialross.ServiceCycle.modules.parts;
 
-import com.danialross.ServiceCycle.modules.parts.dto.PartWithInstalledMileage;
+import com.danialross.ServiceCycle.modules.parts.interfaces.PartWithInstalledMileage;
 import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
 import com.danialross.ServiceCycle.modules.parts.enums.PartType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +23,24 @@ public interface PartRepository extends JpaRepository<Part, UUID> {
             p.isActive = true
             """)
     List<PartWithInstalledMileage> findActiveParts(@Param("vehicleId") UUID vehicleId, @Param("ownerId") UUID ownerId);
-    Optional<Part> findByTypeAndPositionAndIsActiveTrue(PartType partType, PartPosition position);
+    @Query("""
+            select p
+            from Part p
+            where p.maintenanceRecord.vehicle.id = :vehicleId
+            and p.type = :type
+            and (:position is null or p.position = :position)
+            and (:index is null or p.index = :index)
+            and isActive = true
+            """)
+    Optional<Part> findLatestActive(@Param("vehicleId") UUID vehicleId,@Param("type") PartType type,@Param("position") PartPosition position,@Param("index") Integer index);
+    @Query("""
+            select p
+            from Part p
+            where p.maintenanceRecord.vehicle.id = :vehicleId
+            and p.type = :type
+            and (:position is null or p.position = :position)
+            and (:index is null or p.index = :index)
+            order by p.maintenanceRecord.vehicleMileage DESC
+            """)
+    Optional<Part> findPreviousActivePart(@Param("vehicleId") UUID vehicleId,@Param("type") PartType type,@Param("position") PartPosition position,@Param("index") Integer index);
 }

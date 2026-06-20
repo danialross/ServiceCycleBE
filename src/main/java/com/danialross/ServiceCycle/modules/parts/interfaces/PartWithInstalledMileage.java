@@ -1,4 +1,4 @@
-package com.danialross.ServiceCycle.modules.parts.dto;
+package com.danialross.ServiceCycle.modules.parts.interfaces;
 
 import com.danialross.ServiceCycle.modules.parts.Part;
 

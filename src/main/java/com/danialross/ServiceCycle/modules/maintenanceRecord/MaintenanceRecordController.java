@@ -2,7 +2,6 @@ package com.danialross.ServiceCycle.modules.maintenanceRecord;
 
 import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.CreateMaintenanceDTO;
 import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.MaintenanceResponse;
-import com.danialross.ServiceCycle.modules.maintenanceRecord.dto.UpdateMaintenanceDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -67,18 +66,18 @@ public class MaintenanceRecordController {
         return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "Update a maintenance record")
+
+    @Operation(summary = "Delete a maintenance record")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Record updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad Input"),
+            @ApiResponse(responseCode = "200", description = "Record deleted successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "403", description = "User doesn't have access"),
     })
-    @PostMapping("/{maintenanceRecordId}")
-    public ResponseEntity<MaintenanceResponse> update(@AuthenticationPrincipal Jwt payload,@PathVariable UUID maintenanceRecordId,@Valid @RequestBody UpdateMaintenanceDTO dto){
-        UUID userId = UUID.fromString(payload.getSubject());
-        MaintenanceRecord maintenance = maintenanceRecordService.update(userId,maintenanceRecordId,dto);
-        MaintenanceResponse response = MaintenanceResponse.fromMaintenance(maintenance);
-        return ResponseEntity.ok().body(response);
+    @DeleteMapping("/{maintenanceRecordId}")
+    public ResponseEntity<UUID> delete(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
+        UUID ownerId = UUID.fromString(payload.getSubject());
+        maintenanceRecordService.delete(ownerId,maintenanceRecordId);
+        return ResponseEntity.ok().body(maintenanceRecordId);
     }
+
 }

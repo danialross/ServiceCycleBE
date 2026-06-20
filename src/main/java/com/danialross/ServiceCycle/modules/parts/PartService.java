@@ -1,13 +1,11 @@
 package com.danialross.ServiceCycle.modules.parts;
 
-import com.danialross.ServiceCycle.modules.maintenanceRecord.MaintenanceRecord;
-import com.danialross.ServiceCycle.modules.maintenanceRecord.MaintenanceRecordService;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecord;
 import com.danialross.ServiceCycle.modules.mileageRecord.MileageRecordService;
 import com.danialross.ServiceCycle.modules.parts.dto.*;
 import com.danialross.ServiceCycle.modules.parts.enums.PartPosition;
 import com.danialross.ServiceCycle.modules.parts.enums.PartType;
-import com.danialross.ServiceCycle.modules.vehicles.VehicleService;
+import com.danialross.ServiceCycle.modules.parts.interfaces.PartWithInstalledMileage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,9 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -30,21 +26,21 @@ public class PartService {
     public void validatePart(CreatePartDTO dto) {
 
         //parts with multiple must have position and index else position and index must be null
-        boolean hasPositionedParts = PartType.positionedParts.contains(dto.getType());
-        boolean hasIndexedParts = PartType.indexedParts.contains(dto.getType());
+        boolean hasPositionedParts = PartType.positionedParts.contains(PartType.valueOf(dto.getType()));
+        boolean hasIndexedParts = PartType.indexedParts.contains(PartType.valueOf(dto.getType()));
 
         boolean hasPosition = dto.getPosition() != null;
         boolean hasIndexes = dto.getIndex() != null;
         StringBuilder error = new StringBuilder();
 
         if (hasPositionedParts) {
-            if (!hasPosition) error.append(PartType.positionedParts + " must have positions\n");
-            if (hasIndexes) error.append(PartType.positionedParts + " cant have index\n");
+            if (!hasPosition) error.append(PartType.positionedParts).append(" must have positions\n");
+            if (hasIndexes) error.append(PartType.positionedParts).append(" cant have index\n");
         }
 
         if (hasIndexedParts) {
-            if (!hasIndexes) error.append(PartType.indexedParts + " must have indexes\n");
-            if (hasPosition) error.append(PartType.indexedParts + " cant have positions\n");
+            if (!hasIndexes) error.append(PartType.indexedParts).append(" must have indexes\n");
+            if (hasPosition) error.append(PartType.indexedParts).append(" cant have positions\n");
         }
 
         if(!(hasIndexedParts || hasPositionedParts) && (hasIndexes || hasPosition))
@@ -64,7 +60,6 @@ public class PartService {
         List<PartStatusSummary> goodParts = new ArrayList<>();
 
         MileageRecord vehicleMileage = mileageRecordService.getLatestMileageRecord(ownerId,vehicleId);
-        System.out.println(partsUsedByVehicle);
         for( PartWithInstalledMileage part : partsUsedByVehicle){
 
             boolean nearingDuration = LocalDate.now().isAfter(part.getInstallDate().plusMonths(part.getPart().getLifespanMonths()-1));
@@ -112,15 +107,40 @@ public class PartService {
         return PartsStatus.builder().expiringParts(expiringParts).expiredParts(expiredParts).goodParts(goodParts).build();
     }
 
-    public void deactivatePart(PartType type,PartPosition position){
-        partRepository.findByTypeAndPositionAndIsActiveTrue(type, position)
+    public void deactivateLatest(UUID vehicleId, PartType type,PartPosition position,Integer index){
+        partRepository.findLatestActive(vehicleId,type, position,index)
                 .ifPresent(part -> {
                     part.setIsActive(false);
                     partRepository.save(part);
                 });
     }
 
+    public void activatePart(UUID vehicleId,PartType type, PartPosition position, Integer index){
+        partRepository.findPreviousActivePart(vehicleId,type,position,index)
+                .ifPresent(part -> {
+                    part.setIsActive(true);
+                    partRepository.save(part);
+                });
+    }
+
     public Part getPart(UUID partId){
         return partRepository.findById(partId).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Part with Id: " + partId + " not found"));
+    }
+
+    public void checkDuplicateParts(List<CreatePartDTO> dto){
+        Set<String> alreadySeenParts = new HashSet<>();
+        for( CreatePartDTO part : dto){
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(part.getType());
+
+            if(part.getPosition() != null) builder.append("_").append(part.getPosition());
+            if(part.getIndex() != null) builder.append("_").append(part.getIndex());
+
+            String partName = builder.toString();
+
+            if(alreadySeenParts.contains(partName)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Request contain multiples of the same parts");
+            alreadySeenParts.add(partName);
+        }
     }
 }
