@@ -52,17 +52,17 @@ public class MaintenanceRecordController {
         return ResponseEntity.ok().body(response);
     }
 
-    @Operation(summary = "Retrieve all maintenance records")
+    @Operation(summary = "Retrieve all maintenance records for a vehicle")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Record retrieved successfully"),
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Forbidden"),
             @ApiResponse(responseCode = "404", description = "Record Not Found"),
     })
-    @GetMapping("/{maintenanceRecordId}/all")
-    public ResponseEntity<List<MaintenanceResponse>> getAll(@AuthenticationPrincipal Jwt payload, @PathVariable UUID maintenanceRecordId){
+    @GetMapping("/{vehicleId}/all")
+    public ResponseEntity<List<MaintenanceResponse>> getAll(@AuthenticationPrincipal Jwt payload, @PathVariable UUID vehicleId){
         UUID ownerId = UUID.fromString(payload.getSubject());
-        List<MaintenanceRecord> records = maintenanceRecordService.findAllWithAccessCheck(ownerId,maintenanceRecordId);
+        List<MaintenanceRecord> records = maintenanceRecordService.findAllWithAccessCheck(ownerId,vehicleId);
         List<MaintenanceResponse> response = new ArrayList<>();
         for(MaintenanceRecord record : records ){
             response.add(MaintenanceResponse.fromMaintenance(record));
