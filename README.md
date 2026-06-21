@@ -95,6 +95,23 @@ http://localhost:8080/swagger-ui.html
 
 ## Authentication
 
+ServiceCycle delegates user signup and login to Supabase Auth — the API itself does not handle credentials or issue tokens.
+
+Obtaining a JWT
+
+To log in and get a token, send a POST request with the user's email and password to your Supabase project's token endpoint:
+
+POST https://<your-project-ref>.supabase.co/auth/v1/token?grant_type=password
+Content-Type: application/json
+apikey: <your-supabase-anon-key>
+
+{
+  "email": "user@example.com",
+  "password": "yourpassword"
+}
+
+The response includes an access_token — this is the JWT to use for authenticated requests.
+
 ServiceCycle delegates user signup and login to [Supabase Auth](https://supabase.com/docs/guides/auth) — the API itself does not handle credentials or issue tokens. Clients authenticate directly against Supabase (email/password, OAuth providers, etc.) to obtain a JWT, then include that token on requests to ServiceCycle:
 
 ```
