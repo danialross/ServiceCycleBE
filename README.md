@@ -93,6 +93,12 @@ Once running, interactive Swagger UI is available at:
 http://localhost:8080/swagger-ui.html
 ```
 
+A live, hosted version of the API documentation is available at:
+
+```
+https://servicecyclebe.onrender.com/swagger-ui/index.html
+```
+
 ## Authentication
 
 ServiceCycle delegates user signup and login to Supabase Auth — the API itself does not handle credentials or issue tokens.
